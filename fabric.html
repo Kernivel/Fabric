@@ -3,9 +3,21 @@
         <meta charset="utf-8">
         <title>Fabric</title>
         <link href="fabric.css" rel="stylesheet" type="text/css">
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
     </head>
     <body>
+        <select name = "algorithm">Select an algorithm
+            <option value = "">--Select your algorithm --</option>
+            <option value = "delaunay">Delaunay</option>
+            <option value = "fabric">Fabric</option>
+
+        </select>
+        <button>Test</button>
         <canvas id="myCanvas" width="400" height="400"></canvas>
-        <script src = "fabric.js" type = "text/javascript"></script>
+        <script src = "modules/helper.js" type="text/javascript"></script>
+
+        <!--<script src = "modules/delaunay.js" type = "text/javascript"></script>
+        <script src = "modules/fabric.js" type = "text/javascript"></script>-->
     </body>
 </html>
