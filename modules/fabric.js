@@ -1,34 +1,30 @@
-var canvas = document.getElementById("myCanvas");
-canvas.width  = window.innerWidth;
-canvas.height = window.innerHeight;
-var ctx = canvas.getContext("2d");
 
-function dot(x,y){
-    ctx.fillStyle = "#000000"
-    ctx.fillRect(x,y,2,2);
-}
 let pts = [];
-
-for (let i = 0;i<100;i++){
-    x = Math.random()*canvas.width;
-    y = Math.random()*canvas.height;
-    arrSize = pts.push([x,y]);
-    console.log(x,y);
-    dot(x,y);
+function mainFabric(nbPoints){
+    pts = [];
+    for (let i = 0;i<nbPoints;i++){
+        x = Math.random()*canvas.width;
+        y = Math.random()*canvas.height;
+        arrSize = pts.push([x,y]);
+        console.log(x,y);
+        dot(x,y);
+    }
+    window.requestAnimationFrame(animate);
 }
-window.requestAnimationFrame(animate);
 
 function animate(){
     let cnx = [];
-    for(let i = 0;i<pts.length;i++){
+    /*for(let i = 0;i<pts.length;i++){
         cnx[i] = find3Mins(i);
         
-    }
-    for(let i = 0;i<50;i++){
+    }*/
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    movePoints(cnx);
+    if(scriptName == "fabric"){
+        window.requestAnimationFrame(animate);
+    }else{
         ctx.clearRect(0,0,canvas.width,canvas.height);
-        movePoints(cnx);
     }
-    window.requestAnimationFrame(animate);
 }
 
 function movePoints(cnx){
@@ -39,7 +35,8 @@ function movePoints(cnx){
         pts[i][0]= newX;
         pts[i][1]= newY;
         dot(newX,newY);
-        connectDot3Dots(pts[i],cnx[i]);
+        //connectDot3Dots(pts[i],cnx[i]);
+        connectCloseDots(100);
     }
 }
 

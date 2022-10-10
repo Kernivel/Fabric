@@ -1,10 +1,23 @@
 var elt = document.querySelector('select');
-elt.addEventListener('change',fetchMatchingScript,elt.value);
-//elt.addEventListener('change',function(){console.log(this.value)});
+var scriptName = "";
+elt.addEventListener('change',function(){scriptName = elt.value;fetchMatchingScript()});
 
 
-function fetchMatchingScript(scriptName){
+function fetchMatchingScript(){
     console.log("script is : " + scriptName);
-    var script = document.querySelector('script[src = "modules/fabric.js]"');
-    console.log("hh"+script);
+    
+    switch(scriptName){
+        case 'fabric':
+            mainFabric(100);
+            break;
+        case 'delaunay':
+            console.log("Not yet implemented");
+            break;
+        case 'triangleP':
+            console.log("Not yet implemented");
+            break;
+        default:
+            ctx.strokeText("Select a mode",canvas.width/2-50,canvas.height/2-50);
+            break;
+    }
 }
