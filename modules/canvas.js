@@ -9,3 +9,8 @@ function dot(x,y){
     ctx.fillStyle = "#000000"
     ctx.fillRect(x,y,2,2);
 }
+
+function dotColor(x,y,color){
+    ctx.fillStyle = color;
+    ctx.fillRect(x,y,2,2);
+}
