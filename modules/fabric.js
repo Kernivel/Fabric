@@ -19,7 +19,8 @@ function animate(){
         
     }*/
     ctx.clearRect(0,0,canvas.width,canvas.height);
-    movePoints(cnx);
+    movePoints();
+    connectCloseDots(200);
     if(scriptName == "fabric"){
         window.requestAnimationFrame(animate);
     }else{
@@ -27,18 +28,16 @@ function animate(){
     }
 }
 
-function movePoints(cnx){
+function movePoints(){
     
     for(let i = 0;i<pts.length;i++){
         newX = (Math.random()-0.5)*5+pts[i][0];
         newY = (Math.random()-0.5)*5+pts[i][1];
         pts[i][0]= newX;
-        pts[i][1]= newY;
-        dot(newX,newY);
-        //connectDot3Dots(pts[i],cnx[i]);
-        connectCloseDots(100);
+        pts[i][1]= newY;    
     }
 }
+
 
 function connectCloseDots(treshold){
     for(let i = 0;i<pts.length;i++){

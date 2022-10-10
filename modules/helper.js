@@ -14,7 +14,7 @@ function fetchMatchingScript(){
             console.log("Not yet implemented");
             break;
         case 'triangleP':
-            mainTriangle(200);
+            mainTriangle(500);
             break;
         default:
             ctx.strokeText("Select a mode",canvas.width/2-50,canvas.height/2-50);

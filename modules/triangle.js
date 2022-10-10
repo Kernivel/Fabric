@@ -10,16 +10,30 @@ function mainTriangle(nbPoints){
         x = Math.random()*canvas.width;
         y = Math.random()*canvas.height;
         arrSize = pts.push([x,y]);
-        console.log(x,y);
-        dot(x,y);
-        if(insideTriangle(a,b,c,[x,y])){
+    }
+    animateTriangle();
+}
+
+function animateTriangle(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    movePoints();
+    drawTriangle(a,b,c);
+    for (let i = 0;i<pts.length;i++){
+        let x = pts[i][0];
+        let y = pts[i][1];
+        if(insideTriangle(a,b,c,pts[i])){
             dotColor(x,y,"#00FF00");
         }else{
             dotColor(x,y,"#FF0000");
         }
     }
-}
 
+    if(scriptName == "triangleP"){
+        window.requestAnimationFrame(animateTriangle);
+    }else{
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+    }
+}
 
 
 function drawTriangle(a,b,c){
