@@ -22,9 +22,12 @@ function animateTriangle(){
         let x = pts[i][0];
         let y = pts[i][1];
         if(insideTriangle(a,b,c,pts[i])){
-            dotColor(x,y,"#00FF00");
+            ctx.fillStyle = "#0000FF";
+            dotColor(x,y,"#0000FF");
         }else{
-            dotColor(x,y,"#FF0000");
+            let nextColor = getColorDistTriangle(a,b,c,pts[i]);
+            ctx.fillStyle = nextColor.toString();
+            dotColor(x,y,nextColor);
         }
     }
 
@@ -55,3 +58,18 @@ function insideTriangle(a,b,c,p){
     && Math.sign(getSidePlane(b,c,a)) == Math.sign(getSidePlane(b,c,p))
     && Math.sign(getSidePlane(a,c,b)) == Math.sign(getSidePlane(a,c,p))
 }
+
+function getColorDistTriangle(a,b,c,p){
+    let dist1 = Math.abs(getSidePlane(a,b,p))/1000;
+    let dist2 = Math.abs(getSidePlane(a,c,p))/1000;
+    let dist3 = Math.abs(getSidePlane(b,c,p))/1000;
+    
+    let minDist = Math.min(dist1,dist2,dist3,255);
+    let color = minDist.toString(16);
+    if (color.length == 1){
+        color = "0".concat(color);
+    }
+    let res = "#0000".concat(color);
+    return res;
+}
+
