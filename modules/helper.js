@@ -10,8 +10,8 @@ function fetchMatchingScript(){
         case 'fabric':
             mainFabric(100);
             break;
-        case 'delaunay':
-            console.log("Not yet implemented");
+        case 'debug':
+            mainDebug(100);
             break;
         case 'triangleP':
             mainTriangle(500);
