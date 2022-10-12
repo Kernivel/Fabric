@@ -17,7 +17,3 @@ function createPoints(nbPoints){
     }
     return pts;
 }
-
-function dot(x,y){
-    ctx.fillRect(x,y,3,3);
-}

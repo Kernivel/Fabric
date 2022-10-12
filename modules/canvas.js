@@ -7,10 +7,10 @@ ctx.strokeText("Select a mode",canvas.width/2-50,canvas.height/2-50);
 
 function dot(x,y){
     ctx.fillStyle = "#000000"
-    ctx.fillRect(x,y,2,2);
+    ctx.fillRect(x,y,5,5);
 }
 
 function dotColor(x,y,color){
     ctx.fillStyle = color;
-    ctx.fillRect(x,y,2,2);
+    ctx.fillRect(x,y,5,5);
 }

@@ -27,6 +27,7 @@ function animateTriangle(){
         }else{
             let nextColor = getColorDistTriangle(a,b,c,pts[i]);
             ctx.fillStyle = nextColor.toString();
+            //console.log(nextColor);
             dotColor(x,y,nextColor);
         }
     }
@@ -64,12 +65,9 @@ function getColorDistTriangle(a,b,c,p){
     let dist2 = Math.abs(getSidePlane(a,c,p))/1000;
     let dist3 = Math.abs(getSidePlane(b,c,p))/1000;
     
-    let minDist = Math.min(dist1,dist2,dist3,255);
-    let color = minDist.toString(16);
-    if (color.length == 1){
-        color = "0".concat(color);
-    }
-    let res = "#0000".concat(color);
+    let minDist = Math.min(Math.round(dist1),Math.round(dist2),Math.round(dist3),255);
+    //let color = minDist.toString(16);
+    res = `rgb(${255-Math.floor(minDist)},0,0)`;
     return res;
 }
 
