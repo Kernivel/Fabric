@@ -11,8 +11,9 @@ function mainDebug(nbPoints){
     }
     
     triangle = [pts[0],pts[1],pts[2]];
-    drawTriangle(pts[0],pts[1],pts[2])
-    allTriangles.root[triangle] = new Trie;
+    console.log("Pre insert",triangle);
+    drawTriangle(pts[0],pts[1],pts[2]);
+    allTriangles.root[triangle] = new Trie();
     for(let i = 3;i<nbPoints;i++){
         allTriangles.insert(pts[i]);
     }

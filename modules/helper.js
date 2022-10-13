@@ -11,10 +11,13 @@ function fetchMatchingScript(){
             mainFabric(100);
             break;
         case 'debug':
-            mainDebug(100);
+            mainDebug(30);
             break;
         case 'triangleP':
             mainTriangle(500);
+            break;
+        case 'delaunay':
+            mainDelaunay();
             break;
         default:
             ctx.strokeText("Select a mode",canvas.width/2-50,canvas.height/2-50);
