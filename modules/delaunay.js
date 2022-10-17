@@ -90,3 +90,67 @@ function initHull(pts){
     }
     return hull;
 }
+
+function crossProduct(p1,p2){
+    // if p1*p2>0 then p1 is clockwise to p2 else anticlockwise
+    return p1[0]*p2[1] - p2[0]*p1[1];
+}
+
+function direction(p1,p2,p3){
+    p3[0] -= p1[0];
+    p3[1] -= p1[1];
+    p2[0] -= p1[0];
+    p2[1] -= p1[1];
+    return crossProduct(p3,p2);
+}
+function mergeHulls(leftHull,rightHull){
+    let newHull;
+    
+    let cpP = leftHull.right;
+    let cpQ = rightHull.left;
+    let p = cpP;
+    let q = cpQ;
+    
+    let prevP = null;
+    let prevQ = null;
+    
+    while(true){
+        prevP = p;
+        prevQ = q;
+        while (direction(p.val,q.val,q.next.val)<0){
+            q = q.next;
+        }
+        while (direction(q.val,p.val,p.prev.val)>0){
+            p = p.prev;
+        }
+        if(q == prevQ && p == prevP){
+            break;
+        }
+    }
+
+    while(true){
+        prevP = cpP;
+        prevQ = cpQ;
+        while (direction(cpP.val,cpQ.val,cpQ.prev.val)>0){
+            cpQ = cpQ.next;
+        }
+        while (direction(cpQ.val,cpP.val,cpP.prev.val)<0){
+            cpP = cpP.prev;
+        }
+        if(q == prevQ && p == prevP){
+            break;
+        }
+    }
+
+    
+    //remove all other points
+    p.next = q
+    q.prev = p
+
+    cpP.prev = cpQ
+    cpQ.next = cpP
+    //Updating leftmost and rightMost
+    leftHull.right = rightHull.right;
+    
+    return leftHull;
+}
