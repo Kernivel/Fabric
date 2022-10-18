@@ -1,12 +1,11 @@
 
-let pts = [];
 function mainFabric(nbPoints){
     pts = [];
     for (let i = 0;i<nbPoints;i++){
         x = Math.random()*canvas.width;
         y = Math.random()*canvas.height;
         arrSize = pts.push([x,y]);
-        console.log(x,y);
+        //console.log(x,y);
         dot(x,y);
     }
     window.requestAnimationFrame(animate);

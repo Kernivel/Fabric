@@ -42,10 +42,10 @@ function animateTriangle(){
 
 function drawTriangle(a,b,c){
     ctx.beginPath();
-    ctx.moveTo(a[0],a[1]);
-    ctx.lineTo(b[0],b[1]);
-    ctx.lineTo(c[0],c[1]);
-    ctx.lineTo(a[0],a[1]);
+    ctx.moveTo(a.x,a.y);
+    ctx.lineTo(b.x,b.y);
+    ctx.lineTo(c.x,c.y);
+    ctx.lineTo(a.x,a.y);
     ctx.stroke();
 }
 

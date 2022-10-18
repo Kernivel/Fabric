@@ -1,3 +1,19 @@
+class Point{
+    cwnext = null;
+    ccwnext = null;
+    index = null;
+    
+    constructor(x,y){
+        this.x = x;
+        this.y = y;
+    }
+
+    substract(a,b){
+        let newPoint = new Point(a.x-b.x,a.y-b.y);
+        return newPoint;
+    }
+}
+
 class DoubleCyclingLinkedList{
     constructor(){
         this.head = null;
@@ -14,9 +30,9 @@ class DoubleCyclingLinkedList{
             newNode.next = this.head;
             this.tail.next = newNode;
             this.tail = this.tail.next;
-            if(value[0]>this.right.val[0]){
+            if(pts[value].x>pts[this.right].x){
                 this.right = newNode;
-            }else if(value[0]<this.left.val[0]){
+            }else if(pts[value].x<val[this.left].x){
                 this.left = newNode;
             }
             return newNode;
@@ -25,6 +41,7 @@ class DoubleCyclingLinkedList{
         this.left = newNode;
         this.right = newNode;
         newNode.next = this.head;
+        newNode.prev = this.head;
         return newNode;
     }
 }

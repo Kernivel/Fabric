@@ -20,137 +20,196 @@ function mainDelaunay(){
     pts = createPoints(50);
     ctx.font = "12px Roboto";
     for(let i = 0;i<pts.length;i++){
-        ctx.fillText(i,pts[i][0],pts[i][1]);
+        ctx.fillText(i,pts[i].x,pts[i].y);
     }
-    mergeDelauney(pts);
+    mergeDelauney(0,50);
 }
 
-function mergeDelauney(pts){
-    let hullLeft = null;
-    let hullRight = null;
-    let hull = null;
-    if(pts.length == 2){
-        let a = pts[0];
-        let b = pts[1];
-        ctx.beginPath();
-        ctx.moveTo(a[0],a[1]);
-        ctx.lineTo(b[0],b[1]);
-        ctx.stroke();
-        adjencyList[pts[0]] = [];
-        adjencyList[pts[1]] = [];
-        adjencyList[pts[0]].push(pts[1]);
-        adjencyList[pts[1]].push(pts[0]);
-        hull = initHull(pts);
-        console.log("New 2 hull : ",hull);
-        return hull;
-    }else if(pts.length == 3){
-        drawTriangle(pts[0],pts[1],pts[2]);
-        adjencyList[pts[0]] = [];
-        adjencyList[pts[1]] = [];
-        adjencyList[pts[2]] = [];
-        adjencyList[pts[0]].push(pts[1],pts[2]);
-        adjencyList[pts[1]].push(pts[0],pts[2]);
-        adjencyList[pts[2]].push(pts[0],pts[1]);
-        hull = initHull(pts);
-        console.log("New 3 hull : ",hull);
-        return hull;
-    }else{
-        let mid = Math.ceil(pts.length/2)
-        let left =  pts.slice(0,mid);
-        let right = pts.slice(mid,pts.length);
-        hullLeft = mergeDelauney(left);
-        hullRight = mergeDelauney(right);
-        return hull;
-    }
-    
-
-}
 function createPoints(nbPoints){
     /* Create a list of points placed randomly inside the canvas space*/
     let res = [];
+    let arrSize = 0;
     for (let i = 0;i<nbPoints;i++){
         x = Math.random()*canvas.width;
         y = Math.random()*canvas.height;
-        arrSize = res.push([x,y]);
-        console.log(x,y);
+        let newPoint = new Point(x,y);
+        arrSize = res.push(newPoint);
         dot(x,y);
-    
     }
-    res.sort(function(a,b){if(a[0] === b[0])return a[1]-b[1];
-                            return a[0]-b[0]});
+    res.sort(function(a,b){if(a.x === b.x)return a.y-b.y;
+                            return a.x-b.x});
+    for(let i = 0;i<res.length;i++){
+        res[i].index = i;
+    }
     return res;
 }
 
-function initHull(pts){
-    let hull = new DoubleCyclingLinkedList();
-    console.log(pts);
-    for(let i = 0;i<pts.length;i++){
-        //console.log("pt:",pts[i]);
-        hull.insert(pts[i]);
+function mergeDelauney(start,end){
+    let hullLeft = null;
+    let hullRight = null;
+    let hull = null;
+    dist = end-start;
+    if(dist == 2){
+        let a = pts[start];
+        let b = pts[start+1];
+        ctx.beginPath();
+        ctx.moveTo(a.x,a.y);
+        ctx.lineTo(b.x,b.y);
+        ctx.stroke();
+        //adjencyList[pts[0]] = [];
+        //adjencyList[pts[1]] = [];
+        //adjencyList[pts[0]].push(pts[1]);
+        //adjencyList[pts[1]].push(pts[0]);
+        hull = initHull(start,end);
+        console.log("New 2 hull : ",hull);
+        return hull;
+    }else if(dist == 3){
+        drawTriangle(pts[0],pts[1],pts[2]);
+        //adjencyList[pts[0]] = [];
+        //adjencyList[pts[1]] = [];
+        //adjencyList[pts[2]] = [];
+        //adjencyList[pts[0]].push(pts[1],pts[2]);
+        //adjencyList[pts[1]].push(pts[0],pts[2]);
+        //adjencyList[pts[2]].push(pts[0],pts[1]);
+        hull = initHull(start,end);
+        console.log("New 3 hull : ",hull);
+        return hull;
+    }else{
+        let mid = Math.ceil((start+end)/2);
+        console.log("left : ",start,mid);
+        console.log("right : ",mid,end);
+        hullLeft = mergeDelauney(start,mid);
+        hullRight = mergeDelauney(mid,end);
+        
+        console.log("Merging left,right",hullLeft,hullRight);
+        hull = mergeHulls(hullLeft,hullRight);
+        console.log("New merged hull",hull);
+        return hull;
     }
+    
+
+}
+
+
+function initHull(start,end){
+    let hull =[];
+    let dist =  end-start;
+    for(let i = start;i<end;i++){
+        hull.push(i);
+    }
+    if(dist == 2){
+        pts[start].cwnext = pts[end-1];
+        pts[start].ccwnext = pts[end-1];
+        pts[end-1].cwnext = pts[start];
+        pts[end-1].ccwnext = pts[start];
+    }else if(dist  == 3){
+        pts[start].cwnext = pts[start+1];
+        pts[start].ccwnext = pts[end-1];
+        pts[start+1].cwnext = pts[start+2];
+        pts[start+1].ccwnext = pts[start];
+        pts[start+2].cwnext = pts[start];
+        pts[start+2].ccwnext = pts[start+1];
+    }else{
+        console.log("Errorr : No init hull for dist: ",dist);
+    }
+    
     return hull;
 }
 
 function crossProduct(p1,p2){
     // if p1*p2>0 then p1 is clockwise to p2 else anticlockwise
-    return p1[0]*p2[1] - p2[0]*p1[1];
+    return p1.x*p2.y - p2.x*p1.y;
 }
 
 function direction(p1,p2,p3){
-    p3[0] -= p1[0];
-    p3[1] -= p1[1];
-    p2[0] -= p1[0];
-    p2[1] -= p1[1];
-    return crossProduct(p3,p2);
+    return crossProduct(p3.substract(p3,p1),p2.substract(p2,p1));
 }
+
 function mergeHulls(leftHull,rightHull){
-    let newHull;
+    console.log(leftHull)
+    let q = pts[rightHull[0]];
+    let p = pts[leftHull[0]];
+
+    for(let elt in leftHull){
+        if (pts[elt] < q.x){
+            q = pts[elt];
+        }
+    }
+
+    for(let elt in leftHull){
+        if (pts[elt] > p.x){
+            p = pts[elt];
+        }
+    }
     
-    let cpP = leftHull.right;
-    let cpQ = rightHull.left;
-    let p = cpP;
-    let q = cpQ;
-    
+    console.log("left q ",q);
+    console.log("right p ",p);
+    let cpP = p;
+    let cpQ = q;
     let prevP = null;
     let prevQ = null;
-    
-    while(true){
+
+    //Raising pq to upper tangeant
+    if(true){
         prevP = p;
         prevQ = q;
-        while (direction(p.val,q.val,q.next.val)<0){
-            q = q.next;
+        if(q.cwnext){
+            while(direction(p,q,q.cwnext)<0){
+                q = q.cwnext;
+                console.log("q = q.cwnext;");
+            }
         }
-        while (direction(q.val,p.val,p.prev.val)>0){
-            p = p.prev;
+        if(p.ccwnext){
+            while(direction(q,p,p.ccwnext)>0){
+                p = p.ccwnext;
+                console.log("p = p.ccwnext;");
+            }
         }
-        if(q == prevQ && p == prevP){
-            break;
+        if(p == prevP && q == prevQ){
+            //break;
         }
     }
-
-    while(true){
+    console.log("Raised upper");
+    prevP = null;
+    prevQ = null;
+    //lower  cpp cpq to lower tangeant
+    if(true){
         prevP = cpP;
         prevQ = cpQ;
-        while (direction(cpP.val,cpQ.val,cpQ.prev.val)>0){
-            cpQ = cpQ.next;
+        if(cpQ.cwnext){
+            while(direction(cpP,cpQ,cpQ.ccwnext)<0){
+                cpQ = cpQ.ccwnext;
+                console.log("q = q.cwnext;");
+            }
         }
-        while (direction(cpQ.val,cpP.val,cpP.prev.val)<0){
-            cpP = cpP.prev;
+        if(p.ccwnext){
+            while(direction(cpQ,cpP,cpP.cwnext)>0){
+                cpP = cpP.cwnext;
+            }
         }
-        if(q == prevQ && p == prevP){
-            break;
+        if(cpP == prevP && cpQ == prevQ){
+            //break;
         }
     }
-
+    console.log("out of while true");
     
     //remove all other points
-    p.next = q
-    q.prev = p
+    p.cwnext = q;
+    q.ccwnext = p;
 
-    cpP.prev = cpQ
-    cpQ.next = cpP
-    //Updating leftmost and rightMost
-    leftHull.right = rightHull.right;
+    cpP.ccwnext = cpQ;
+    cpQ.cwnext = cpP;
     
-    return leftHull;
+    let hull = [];
+    start = p;
+    console.log("aa",p);
+    let cnt = 0;
+    do{
+        hull.push(p.index);
+        p = p.cwnext;
+        cnt+=1;
+    }while(p.index != start.index || cnt<10);
+    
+    console.log("Resulting hull",hull);
+    return hull;
 }
