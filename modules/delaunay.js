@@ -17,12 +17,12 @@ var adjencyList = {};
   */
 
 function mainDelaunay(){
-    pts = createPoints(50);
+    pts = createPoints(20);
     ctx.font = "12px Roboto";
     for(let i = 0;i<pts.length;i++){
-        ctx.fillText(i,pts[i].x,pts[i].y);
+        ctx.fillText(pts[i].index,pts[i].x,pts[i].y);
     }
-    mergeDelauney(0,50);
+    mergeDelauney(0,pts.length);
 }
 
 function createPoints(nbPoints){
@@ -98,17 +98,24 @@ function initHull(start,end){
         hull.push(i);
     }
     if(dist == 2){
-        pts[start].cwnext = pts[end-1];
-        pts[start].ccwnext = pts[end-1];
-        pts[end-1].cwnext = pts[start];
-        pts[end-1].ccwnext = pts[start];
-    }else if(dist  == 3){
+        console.log("Linking from",start,end)
         pts[start].cwnext = pts[start+1];
-        pts[start].ccwnext = pts[end-1];
-        pts[start+1].cwnext = pts[start+2];
-        pts[start+1].ccwnext = pts[start];
-        pts[start+2].cwnext = pts[start];
-        pts[start+2].ccwnext = pts[start+1];
+        pts[start].ccwnext = pts[start].cwnext
+        pts[start+1].cwnext = pts[start];
+        pts[start+1].ccwnext = pts[start+1].cwnext
+        console.log("At init 2 ",pts[start]);
+        console.log("At init 2 ",pts[start+1]);
+    }else if(dist  == 3){
+        console.log("Linking from",start,end)
+        pts[start].cwnext = pts[start+1];
+        pts[start].ccwnext = pts[start+2];
+        pts[start+1].cwnext = pts[start];
+        pts[start+1].ccwnext = pts[start+2];
+        pts[start+2].cwnext = pts[start+1];
+        pts[start+2].ccwnext = pts[start];
+        console.log("At init 3 ",pts[start]);
+        console.log("At init 3 ",pts[start+1]);
+        console.log("At init 3 ",pts[start+2]);
     }else{
         console.log("Errorr : No init hull for dist: ",dist);
     }
@@ -126,24 +133,12 @@ function direction(p1,p2,p3){
 }
 
 function mergeHulls(leftHull,rightHull){
-    console.log(leftHull)
-    let q = pts[rightHull[0]];
-    let p = pts[leftHull[0]];
-
-    for(let elt in leftHull){
-        if (pts[elt] < q.x){
-            q = pts[elt];
-        }
-    }
-
-    for(let elt in leftHull){
-        if (pts[elt] > p.x){
-            p = pts[elt];
-        }
-    }
+    console.log(rightHull);
+    let q = pts[Math.min.apply(null,rightHull)];
+    let p = pts[Math.max.apply(null,leftHull)];
     
-    console.log("left q ",q);
-    console.log("right p ",p);
+    console.log("before q ",q);
+    console.log("before p ",p);
     let cpP = p;
     let cpQ = q;
     let prevP = null;
@@ -156,30 +151,33 @@ function mergeHulls(leftHull,rightHull){
         if(q.cwnext){
             while(direction(p,q,q.cwnext)<0){
                 q = q.cwnext;
-                console.log("q = q.cwnext;");
+                //console.log("q = q.cwnext;");
             }
         }
         if(p.ccwnext){
             while(direction(q,p,p.ccwnext)>0){
                 p = p.ccwnext;
-                console.log("p = p.ccwnext;");
+                //console.log("p = p.ccwnext;");
             }
         }
         if(p == prevP && q == prevQ){
             //break;
         }
     }
-    console.log("Raised upper");
+    console.log("after q ",q);
+    console.log("after p ",p);
     prevP = null;
     prevQ = null;
     //lower  cpp cpq to lower tangeant
+    console.log("cp q ",cpQ);
+    console.log("cp p ",cpP);
     if(true){
         prevP = cpP;
         prevQ = cpQ;
         if(cpQ.cwnext){
             while(direction(cpP,cpQ,cpQ.ccwnext)<0){
                 cpQ = cpQ.ccwnext;
-                console.log("q = q.cwnext;");
+                
             }
         }
         if(p.ccwnext){
@@ -191,7 +189,6 @@ function mergeHulls(leftHull,rightHull){
             //break;
         }
     }
-    console.log("out of while true");
     
     //remove all other points
     p.cwnext = q;
@@ -200,16 +197,23 @@ function mergeHulls(leftHull,rightHull){
     cpP.ccwnext = cpQ;
     cpQ.cwnext = cpP;
     
+    console.log("p.cwnext ",p);
+    console.log("q.ccwnext ",q);
+    console.log("cpP.ccwnext ",cpQ);
+    console.log("cpQ.cwnext ",cpP);
     let hull = [];
     start = p;
-    console.log("aa",p);
     let cnt = 0;
+    //ctx.beginPath();
+    //ctx.moveTo(p.x,p.y);
     do{
         hull.push(p.index);
         p = p.cwnext;
         cnt+=1;
+        //ctx.lineTo(p.x,p.y);
+        
     }while(p.index != start.index || cnt<10);
-    
+    //ctx.stroke();
     console.log("Resulting hull",hull);
     return hull;
 }
