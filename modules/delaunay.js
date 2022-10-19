@@ -139,8 +139,8 @@ function mergeHulls(leftHull,rightHull){
     let q = pts[Math.min.apply(null,rightHull)];
     let p = pts[Math.max.apply(null,leftHull)];
     
-    console.log("before q ",q);
-    console.log("before p ",p);
+    console.log("before q ",JSON.stringify(q));
+    console.log("before p ",JSON.stringify(p));
     let cpP = p;
     let cpQ = q;
     let prevP = null;
@@ -166,24 +166,24 @@ function mergeHulls(leftHull,rightHull){
             break;
         }
     }
-    //console.log("after q ",q);
-    //console.log("after p ",p);
+    console.log("after q ",JSON.stringify(q));
+    console.log("after p ",JSON.stringify(p));
     prevP = null;
     prevQ = null;
     //lower  cpp cpq to lower tangeant
-    //console.log("cp q ",cpQ);
-    //console.log("cp p ",cpP);
+    console.log("before cpQ ",JSON.stringify(cpQ));
+    console.log("before cpP ",JSON.stringify(cpP));
     while(true){
         prevP = cpP;
         prevQ = cpQ;
         if(cpQ.cwnext){
-            while(direction(cpP,cpQ,pts[cpQ.ccwnext])<0){
+            while(direction(cpP,cpQ,pts[cpQ.ccwnext])>0){
                 cpQ = pts[cpQ.ccwnext];
                 
             }
         }
         if(p.ccwnext){
-            while(direction(cpQ,cpP,pts[cpP.cwnext])>0){
+            while(direction(cpQ,cpP,pts[cpP.cwnext])<0){
                 cpP = pts[cpP.cwnext];
             }
         }
@@ -191,6 +191,8 @@ function mergeHulls(leftHull,rightHull){
             break;
         }
     }
+    console.log("after cpQ ",JSON.stringify(cpQ));
+    console.log("after cpP ",JSON.stringify(cpP));
     
     //remove all other points
     p.cwnext = q.index;
@@ -198,27 +200,22 @@ function mergeHulls(leftHull,rightHull){
 
     cpP.ccwnext = cpQ.index;
     cpQ.cwnext = cpP.index;
-    
-    console.log("p.cwnext ",p);
-    console.log("q.ccwnext ",q);
-    console.log("cpP.ccwnext ",cpQ);
-    console.log("cpQ.cwnext ",cpP);
     let hull = [];
     let begin = p;
     let cnt = 0;
     
-    //ctx.beginPath();
-    //ctx.moveTo(p.x,p.y);
+    ctx.beginPath();
+    ctx.moveTo(p.x,p.y);
     do{
+        console.log("At",begin.index,p.index);
         hull.push(p.index);
         p = pts[p.cwnext];
         cnt+=1;
-        console.log(begin.index,p.index);
         ctx.lineTo(p.x,p.y);
         
     }while(p.index != begin.index);
-    //ctx.lineTo(begin.x,begin.y);
-    //ctx.stroke();
+    ctx.lineTo(begin.x,begin.y);
+    ctx.stroke();
     console.log("Resulting hull",hull);
     return hull;
 }
