@@ -41,6 +41,8 @@ function animateTriangle(){
 
 
 function drawTriangle(a,b,c){
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.moveTo(a.x,a.y);
     ctx.lineTo(b.x,b.y);
