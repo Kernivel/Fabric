@@ -32,8 +32,7 @@ function createPoints(nbPoints){
     for (let i = 0;i<nbPoints;i++){
         x = Math.random()*canvas.width;
         y = Math.random()*canvas.height;
-        let newPoint = new Point(x,y);
-        arrSize = res.push(newPoint);
+        arrSize = res.push(new Point(x,y));
         dot(x,y);
     }
     res.sort(function(a,b){if(a.x === b.x)return a.y-b.y;
@@ -58,32 +57,24 @@ function mergeDelauney(start,end){
         ctx.moveTo(a.x,a.y);
         ctx.lineTo(b.x,b.y);
         ctx.stroke();
-        adjencyList[pts[0]] = [];
-        adjencyList[pts[1]] = [];
-        adjencyList[pts[0]].push(pts[1]);
-        adjencyList[pts[1]].push(pts[0]);
+        adjencyList[start] = [];
+        adjencyList[start+1] = [];
+        adjencyList[start].push(start+1);
+        adjencyList[start+1].push(start);
         hull = initHull(start,end);
-        console.log("New 2 hull : ",hull);
         return hull;
     }else if(dist == 3){
         drawTriangle(pts[start],pts[start+1],pts[start+2]);
-        adjencyList[pts[0]] = [];
-        adjencyList[pts[1]] = [];
-        adjencyList[pts[2]] = [];
-        adjencyList[pts[0]].push(pts[1],pts[2]);
-        adjencyList[pts[1]].push(pts[0],pts[2]);
-        adjencyList[pts[2]].push(pts[0],pts[1]);
-        
+        adjencyList[start] = [];
+        adjencyList[start+1] = [];
+        adjencyList[start+2] = [];
+        adjencyList[start].push(start,start+2);
+        adjencyList[start+1].push(start,pts[start+2]);
+        adjencyList[start+2].push(start,start+1);
         hull = initHull(start,end);
-        //console.log("Triangle ",JSON.stringify(pts[start]));
-        //console.log("Triangle ",JSON.stringify(pts[start+1]));
-        //console.log("Triangle ",JSON.stringify(pts[start+2]));
-        //console.log("New 3 hull : ",hull);
         return hull;
     }else{
         let mid = Math.ceil((start+end)/2);
-        //console.log("left : ",start,mid);
-        //console.log("right : ",mid,end);
         hullLeft = mergeDelauney(start,mid);
         hullRight = mergeDelauney(mid,end);
         
@@ -104,18 +95,14 @@ function initHull(start,end){
         hull.push(i);
     }
     if(dist == 2){
-        console.log("Linking from",start,end)
         pts[start].cwnext = start+1;
         pts[start].ccwnext = start+1;
         
         pts[start+1].cwnext = start;
         pts[start+1].ccwnext = start;
     }else if(dist  == 3){
-        console.log("Linking from",start,end);
-        console.log("Dir",direction(pts[start],pts[start+1],pts[start+2]))
-        
+
         if (direction(pts[start],pts[start+1],pts[start+2])<0){
-            console.log("1 is First");
             pts[start].cwnext = start+1;
             pts[start].ccwnext = start+2;
             pts[start+1].cwnext = start+2;
@@ -123,7 +110,6 @@ function initHull(start,end){
             pts[start+2].ccwnext = start+1;
             pts[start+2].cwnext = start;
         }else{
-            console.log("2 is First");
             pts[start].cwnext = start+2;
             pts[start].ccwnext = start+1;
             pts[start+2].cwnext = start+1;
@@ -131,11 +117,6 @@ function initHull(start,end){
             pts[start+1].cwnext = start;
             pts[start+1].ccwnext = start+2;
         }
-
-        
-        //console.log("At init 3 ",pts[start]);
-        //console.log("At init 3 ",pts[start+1]);
-        //console.log("At init 3 ",pts[start+2]);
     }else{
         console.log("Errorr : No init hull for dist: ",dist);
     }
@@ -148,9 +129,16 @@ function crossProduct(p1,p2){
     return p1.x*p2.y - p2.x*p1.y;
 }
 
+function computeClockwiseAngle(p1,p2,p3){
+    console.log
+    let result = Math.atan2(p3.substract(p1).y,p3.substract(p1).x)-Math.atan2(p2.substract(p1).y,p2.substract(p1).x);
+    return result;
+}
+
 function direction(p1,p2,p3){
     return crossProduct(p3.substract(p1),p2.substract(p1));
 }
+
 
 function mergeHulls(leftHull,rightHull){
 
@@ -160,9 +148,6 @@ function mergeHulls(leftHull,rightHull){
     let cpP = p;
     let cpQ = q;
 
-    //p is point on leftHull, q is point on the right
-    console.log("Init p ",JSON.stringify(p));
-    console.log("Init q ",JSON.stringify(q));
     let prevP = null;
     let prevQ = null;
 
@@ -198,16 +183,33 @@ function mergeHulls(leftHull,rightHull){
         }
     }
 
-    console.log("Final lower p ",JSON.stringify(p));
-    console.log("Final lower q ",JSON.stringify(q));
-    console.log("Final upper cpP ",JSON.stringify(cpP));
-    console.log("Final upper cpQ ",JSON.stringify(cpQ));
-    
     p.ccwnext = q.index;
     q.cwnext = p.index;
     cpP.cwnext = cpQ.index;
     cpQ.ccwnext = cpP.index;
-    
+
+    //Compute edges for candidates
+    while(true){
+        // at p,q
+        let orderedAdj = [];
+        console.log("test",JSON.stringify(q.index),JSON.stringify(adjencyList[q.index]));
+        for(let i = 0;i<adjencyList[q.index].length;i++){
+            console.log("t",adjencyList[q.index][i]);
+            orderedAdj.push([adjencyList[q.index][i],computeClockwiseAngle(p,q,pts[adjencyList[q.index][i]])]);
+        }
+        console.log("Ordered adj list from",JSON.stringify(p),"to",JSON.stringify(q));
+        console.log("Is ",JSON.stringify(orderedAdj));
+        break;
+
+        
+        if(candP == cpP && candQ == cpQ){
+            break;
+        }
+    }
+
+
+
+
     let start = p;
     let hull = [];
     ctx.beginPath();
@@ -216,7 +218,7 @@ function mergeHulls(leftHull,rightHull){
     ctx.stroke();
     do{
         hull.push(p.index);
-        console.log("Walking",JSON.stringify(p));
+        //console.log("Walking",JSON.stringify(p));
         p = pts[p.cwnext];
         ctx.lineTo(p.x,p.y);
     }while(p != start);
