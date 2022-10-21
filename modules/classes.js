@@ -8,9 +8,9 @@ class Point{
         this.y = y;
     }
 
-    substract(a,b){
-        let newPoint = new Point(a.x-b.x,a.y-b.y);
-        return newPoint;
+    substract(p){
+        let newP = new Point(this.x-p.x,this.y-p.y);
+        return newP;
     }
 }
 

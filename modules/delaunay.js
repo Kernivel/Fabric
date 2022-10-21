@@ -58,32 +58,32 @@ function mergeDelauney(start,end){
         ctx.moveTo(a.x,a.y);
         ctx.lineTo(b.x,b.y);
         ctx.stroke();
-        //adjencyList[pts[0]] = [];
-        //adjencyList[pts[1]] = [];
-        //adjencyList[pts[0]].push(pts[1]);
-        //adjencyList[pts[1]].push(pts[0]);
+        adjencyList[pts[0]] = [];
+        adjencyList[pts[1]] = [];
+        adjencyList[pts[0]].push(pts[1]);
+        adjencyList[pts[1]].push(pts[0]);
         hull = initHull(start,end);
         console.log("New 2 hull : ",hull);
         return hull;
     }else if(dist == 3){
         drawTriangle(pts[start],pts[start+1],pts[start+2]);
-        //adjencyList[pts[0]] = [];
-        //adjencyList[pts[1]] = [];
-        //adjencyList[pts[2]] = [];
-        //adjencyList[pts[0]].push(pts[1],pts[2]);
-        //adjencyList[pts[1]].push(pts[0],pts[2]);
-        //adjencyList[pts[2]].push(pts[0],pts[1]);
+        adjencyList[pts[0]] = [];
+        adjencyList[pts[1]] = [];
+        adjencyList[pts[2]] = [];
+        adjencyList[pts[0]].push(pts[1],pts[2]);
+        adjencyList[pts[1]].push(pts[0],pts[2]);
+        adjencyList[pts[2]].push(pts[0],pts[1]);
         
         hull = initHull(start,end);
-        console.log("Triangle ",JSON.stringify(pts[start]));
-        console.log("Triangle ",JSON.stringify(pts[start+1]));
-        console.log("Triangle ",JSON.stringify(pts[start+2]));
-        console.log("New 3 hull : ",hull);
+        //console.log("Triangle ",JSON.stringify(pts[start]));
+        //console.log("Triangle ",JSON.stringify(pts[start+1]));
+        //console.log("Triangle ",JSON.stringify(pts[start+2]));
+        //console.log("New 3 hull : ",hull);
         return hull;
     }else{
         let mid = Math.ceil((start+end)/2);
-        console.log("left : ",start,mid);
-        console.log("right : ",mid,end);
+        //console.log("left : ",start,mid);
+        //console.log("right : ",mid,end);
         hullLeft = mergeDelauney(start,mid);
         hullRight = mergeDelauney(mid,end);
         
@@ -149,13 +149,11 @@ function crossProduct(p1,p2){
 }
 
 function direction(p1,p2,p3){
-    return crossProduct(p3.substract(p3,p1),p2.substract(p2,p1));
+    return crossProduct(p3.substract(p1),p2.substract(p1));
 }
 
 function mergeHulls(leftHull,rightHull){
-    /*for(let i = 0; i<pts.length;i++){
-        console.log(i,pts[i].index);
-    }*/
+
     console.log(rightHull);
     let q = pts[Math.min.apply(null,rightHull)];
     let p = pts[Math.max.apply(null,leftHull)];
@@ -167,67 +165,64 @@ function mergeHulls(leftHull,rightHull){
     console.log("Init q ",JSON.stringify(q));
     let prevP = null;
     let prevQ = null;
-    // lower p and q to base edge
 
-    while(true){
+    //lower the bridge pq 
+    while (true){
         prevP = p;
-        prevQ = q;
-        //Lower edge
-        while(direction(p,q,pts[p.ccwnext])<0){
-            console.log("Lowered p from",JSON.stringify(p));
-            p = pts[p.ccwnext];
-            console.log("To",JSON.stringify(p));
+        prevQ = q;     
+        while (direction(p, q, pts[q.ccwnext]) < 0){
+            q = pts[q.ccwnext];
         }
-        while(direction(q,p,pts[q.cwnext])>0){
-            console.log("Lowered q from",JSON.stringify(q));
-            q = pts[q.cwnext];
-            console.log("To",JSON.stringify(q));
+        while (direction(q, p, pts[p.cwnext]) > 0){
+            p = pts[p.cwnext];
         }
 
-        if(prevP == p && prevQ == q){
+        if(p == prevP && q == prevQ){
             break;
         }
     }
-    
 
-    
-    
-    //Up edge
-    while(true){
+    //up the bridge cpP cpQ 
+    while (true){
         prevP = cpP;
         prevQ = cpQ;
-        while(direction(cpP,cpQ,pts[cpP.ccwnext])>0){
-            console.log("Upped cpP from",JSON.stringify(cpP));
+
+        while (direction(cpP, cpQ, pts[cpQ.cwnext]) > 0){
+            cpQ = pts[cpQ.cwnext];
+        }
+        while (direction(cpQ, cpP, pts[cpP.ccwnext]) < 0){
             cpP = pts[cpP.ccwnext];
-            console.log("To ",JSON.stringify(cpP));
         }
-        while(direction(cpQ,cpP,pts[cpQ.ccwnext])<0){
-            console.log("Upped cpQ from",JSON.stringify(cpQ));
-            cpQ = pts[cpQ.ccwnext];
-            console.log("To ",JSON.stringify(cpQ));
-        }
-        if(prevP == cpP && prevQ == cpQ){
+        if (cpP == prevP && cpQ == prevQ){
             break;
         }
     }
-    
+
     console.log("Final lower p ",JSON.stringify(p));
     console.log("Final lower q ",JSON.stringify(q));
-    console.log("Final upper cpP ",JSON.stringify(p));
-    console.log("Final upper cpQ ",JSON.stringify(q));
-    p.cwnext = q.index;
-    q.ccwnext = p.index;
-    cpP.ccwnext = cpQ.index;
-    cpQ.cwnext = cpP.index;
-
+    console.log("Final upper cpP ",JSON.stringify(cpP));
+    console.log("Final upper cpQ ",JSON.stringify(cpQ));
+    
+    p.ccwnext = q.index;
+    q.cwnext = p.index;
+    cpP.cwnext = cpQ.index;
+    cpQ.ccwnext = cpP.index;
     
     let start = p;
     let hull = [];
+    ctx.beginPath();
+    ctx.moveTo(p.x,p.y);
+    
+    ctx.stroke();
     do{
         hull.push(p.index);
         console.log("Walking",JSON.stringify(p));
         p = pts[p.cwnext];
+        ctx.lineTo(p.x,p.y);
     }while(p != start);
+    ctx.strokeStyle = "blue";
+    ctx.lineWidth = 2;
+    ctx.stroke();
 
     return hull;
 }
