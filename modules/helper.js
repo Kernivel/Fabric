@@ -17,7 +17,9 @@ function fetchMatchingScript(){
             mainTriangle(500);
             break;
         case 'delaunay':
-            mainDelaunay();
+            let delaun = new Delaunay(canvas);
+            delaun.createPoints(20);
+            delaun.delaunization(0,20);
             break;
         default:
             ctx.strokeText("Select a mode",canvas.width/2-50,canvas.height/2-50);
