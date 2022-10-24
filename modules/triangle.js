@@ -62,19 +62,7 @@ function insideTriangle(a,b,c,p){
     && Math.sign(getSidePlane(a,c,b)) == Math.sign(getSidePlane(a,c,p))
 }
 
-function inCircle (a,b,c,d) {
-    let ax_ = a.x-d.x;
-    let ay_ = a.y-d.y;
-    let bx_ = b.x-d.x;
-    let by_ = b.y-d.y;
-    let cx_ = c.x-d.x;
-    let cy_ = c.y-d.y;
-    return (
-        (ax_*ax_ + ay_*ay_) * (bx_*cy_-cx_*by_) -
-        (bx_*bx_ + by_*by_) * (ax_*cy_-cx_*ay_) +
-        (cx_*cx_ + cy_*cy_) * (ax_*by_-bx_*ay_)
-    ) > 0;
-}
+
 
 function getColorDistTriangle(a,b,c,p){
     let dist1 = Math.abs(getSidePlane(a,b,p))/1000;
