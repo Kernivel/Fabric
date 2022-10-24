@@ -183,48 +183,36 @@ function mergeHulls(leftHull,rightHull){
         }
     }
 
+    
     p.ccwnext = q.index;
     q.cwnext = p.index;
     cpP.cwnext = cpQ.index;
     cpQ.ccwnext = cpP.index;
+    
 
-    //Compute edges for candidates
-    while(true){
-        // at p,q
-        let orderedAdj = [];
-        console.log("test",JSON.stringify(q.index),JSON.stringify(adjencyList[q.index]));
-        for(let i = 0;i<adjencyList[q.index].length;i++){
-            console.log("t",adjencyList[q.index][i]);
-            orderedAdj.push([adjencyList[q.index][i],computeClockwiseAngle(p,q,pts[adjencyList[q.index][i]])]);
-        }
-        console.log("Ordered adj list from",JSON.stringify(p),"to",JSON.stringify(q));
-        console.log("Is ",JSON.stringify(orderedAdj));
-        break;
-
-        
-        if(candP == cpP && candQ == cpQ){
-            break;
-        }
-    }
+    
+  
 
 
 
 
     let start = p;
     let hull = [];
-    ctx.beginPath();
-    ctx.moveTo(p.x,p.y);
     
-    ctx.stroke();
+    //ctx.beginPath();
+    //ctx.moveTo(p.x,p.y);
+    //ctx.stroke();
+
     do{
         hull.push(p.index);
         //console.log("Walking",JSON.stringify(p));
         p = pts[p.cwnext];
-        ctx.lineTo(p.x,p.y);
+        //ctx.lineTo(p.x,p.y);
     }while(p != start);
-    ctx.strokeStyle = "blue";
-    ctx.lineWidth = 2;
-    ctx.stroke();
+    
+    //ctx.strokeStyle = "blue";
+    //ctx.lineWidth = 2;
+    //ctx.stroke();
 
     return hull;
 }
