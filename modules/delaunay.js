@@ -19,8 +19,10 @@ class Delaunay{
         }
         this.pts.sort(function(a,b){if(a.x === b.x)return a.y-b.y;
                                 return a.x-b.x});
+        ctx.font = "20px Roboto";
         for(let i = 0;i<this.pts.length;i++){
             this.pts[i].index = i;
+            ctx.strokeText(i,this.pts[i].x,this.pts[i].y);
         }
         console.log("Created and ordered new set of points",this.pts);
     };
@@ -54,8 +56,8 @@ class Delaunay{
             this.adjencyList[start] = [];
             this.adjencyList[start+1] = [];
             this.adjencyList[start+2] = [];
-            this.adjencyList[start].push(start,start+2);
-            this.adjencyList[start+1].push(start,pts[start+2]);
+            this.adjencyList[start].push(start+1,start+2);
+            this.adjencyList[start+1].push(start,start+2);
             this.adjencyList[start+2].push(start,start+1);
             hull = this.initHull(start,end);
             return hull;
@@ -139,7 +141,13 @@ class Delaunay{
     }
     
     computeClockwiseAngle(p1,p2,p3){
-        let result = Math.atan2(p3.substract(p1).y,p3.substract(p1).x)-Math.atan2(p2.substract(p1).y,p2.substract(p1).x);
+        console.log("Computing angle between ",p1.index,p2.index,p3.index);
+        //Move vectors to the origin
+        let v1 = p2.substract(p1);
+        let v2 = p3.substract(p1);
+        let result = Math.atan2(v1.x*v2.y-v1.y*v2.x,v1.x*v2.x+v1.y*v2.y);
+        console.log("angle is ",result*180/Math.PI);
+        //let result = Math.atan2(p3.substract(p1).y,p3.substract(p1).x)-Math.atan2(p2.substract(p1).y,p2.substract(p1).x);
         return result;
     }
     
@@ -189,11 +197,12 @@ class Delaunay{
         let nextCanditate = null;
 
         if(side == "left"){
-            console.log("Looking for left canditate");
+            console.log("Looking for left canditate between ",p.index,q.index);
             //Trying to find a potential candidate in the left hull P
-            for(let el in this.adjencyList[p.index]){
-                sortedArrayAdj.push([Number(el),this.computeClockwiseAngle(q,p,this.pts[el])]);
-                
+            console.log("Adj is ",JSON.stringify(p),this.adjencyList[p.index]);
+            for(let i = 0;i<this.adjencyList[p.index].length;i++){
+                let pt = this.pts[this.adjencyList[p.index][i]];
+                sortedArrayAdj.push([this.adjencyList[p.index][i],this.computeClockwiseAngle(q,p,pt)]);
             }
             sortedArrayAdj.sort(function(a,b){return a[1]-b[1];});
             console.log("points are ",sortedArrayAdj);
@@ -202,7 +211,7 @@ class Delaunay{
             }
             for(let i = 0;i<sortedArrayAdj.length-1;i++){
                 candidate = sortedArrayAdj[i];
-                if(candidate[1]>2*Math.PI){
+                if(candidate[1]>180){
                     return null;
                 }
                 nextCanditate = sortedArrayAdj[i+1];
@@ -218,10 +227,14 @@ class Delaunay{
         }else if(side == "right"){
             console.log("Looking for right canditate");
             //Trying to find a potential candidate in the right hull Q
-            for(let el in this.adjencyList[q.index]){
-                //switch angle to anti-clockwise : -this.computeClockwiseAngle(q,p,this.pts[el])+Math.PI/4)%(2*Math.PI) : 
-                sortedArrayAdj.push([Number(el),(-this.computeClockwiseAngle(p,q,this.pts[el])+Math.PI/4)%(2*Math.PI)]);
+            for(let i = 0;i<this.adjencyList[q.index].length;i++){
+                let pt = this.pts[this.adjencyList[q.index][i]];
+                sortedArrayAdj.push([this.adjencyList[q.index][i],(-this.computeClockwiseAngle(p,q,pt)+Math.PI/4)%(2*Math.PI)]);
             }
+            /*for(let el in this.adjencyList[q.index]){
+                //switch angle to anti-clockwise : -this.computeClockwiseAngle(q,p,this.pts[el])+Math.PI/4)%(2*Math.PI) : 
+                sortedArrayAdj.push([this.pts[el].index,(-this.computeClockwiseAngle(p,q,this.pts[el])+Math.PI/4)%(2*Math.PI)]);
+            }*/
             sortedArrayAdj.sort(function(a,b){return a[1]-b[1];});
             console.log("points are ",sortedArrayAdj);
             if(sortedArrayAdj.length === 1){
@@ -229,7 +242,7 @@ class Delaunay{
             }
             for(let i = 0;i<sortedArrayAdj.length-1;i++){
                 candidate = sortedArrayAdj[i];
-                if(candidate[1]>2*Math.PI){
+                if(candidate[1]>180){
                     return null;
                 }
                 nextCanditate = sortedArrayAdj[i+1];
