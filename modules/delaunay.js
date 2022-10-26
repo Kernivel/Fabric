@@ -123,8 +123,8 @@ class Delaunay{
         let leftCandidate = this.findNextCandidate("left",p,q);
         let rightCandidate = this.findNextCandidate("right",p,q);
 
-        console.log("Next candidate on left is ",leftCandidate);
-        console.log("Next candidate on right is ",rightCandidate);
+        console.log("Next candidate on left is ",JSON.stringify(leftCandidate));
+        console.log("Next candidate on right is ",JSON.stringify(rightCandidate));
         let start = p;
         let hull = [];
         do{
@@ -205,10 +205,10 @@ class Delaunay{
 
             for(let i = 0;i<this.adjencyList[q.index].length;i++){
                 let pt = this.pts[this.adjencyList[q.index][i]];
-                sortedArrayAdj.push([this.adjencyList[p.index][i],this.computeClockwiseAngle(p,q,pt)])
+                sortedArrayAdj.push([pt,this.computeClockwiseAngle(p,q,pt)])
             }
             sortedArrayAdj.sort(function(a,b){return a[1]-b[1];});
-            //console.log("points are ",sortedArrayAdj);
+            console.log("points are ",sortedArrayAdj);
 
             if(sortedArrayAdj.length === 1){
                 return sortedArrayAdj[0];
@@ -220,7 +220,7 @@ class Delaunay{
                 }
                 nextCanditate = sortedArrayAdj[i+1];
                 
-                if(!this.pts[nextCanditate[0]].inCircle(this.pts[candidate[0]],q,p)){
+                if(!nextCanditate[0].inCircle(candidate[0],q,p)){
                     //nextCanditate is outside the circumcirlce candidate,p,q : candidate is our target
                     return candidate;
                 }
@@ -234,11 +234,11 @@ class Delaunay{
 
             for(let i = 0;i<this.adjencyList[p.index].length;i++){
                 let pt = this.pts[this.adjencyList[p.index][i]];
-                sortedArrayAdj.push([this.adjencyList[p.index][i],-this.computeClockwiseAngle(q,p,pt)])
+                sortedArrayAdj.push([pt,-this.computeClockwiseAngle(q,p,pt)])
             }
 
             sortedArrayAdj.sort(function(a,b){return a[1]-b[1];});
-            //console.log("points are ",sortedArrayAdj);
+            console.log("points are ",sortedArrayAdj);
 
             if(sortedArrayAdj.length === 1){
                 return sortedArrayAdj[0];
@@ -252,7 +252,7 @@ class Delaunay{
 
                 nextCanditate = sortedArrayAdj[i+1];
                 
-                if(!this.pts[nextCanditate[0]].inCircle(this.pts[candidate[0]],q,p)){
+                if(!nextCanditate[0].inCircle(candidate[0],q,p)){
                     //nextCanditate is outside the circumcirlce candidate,p,q : candidate is our target
                     return candidate;
                 }
