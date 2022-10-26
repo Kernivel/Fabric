@@ -141,14 +141,15 @@ class Delaunay{
     }
     
     computeClockwiseAngle(p1,p2,p3){
-        console.log("Computing angle between ",p1.index,p2.index,p3.index);
-        //Move vectors to the origin
-        let v1 = p2.substract(p1);
-        let v2 = p3.substract(p1);
-        let result = Math.atan2(v1.x*v2.y-v1.y*v2.x,v1.x*v2.x+v1.y*v2.y);
-        console.log("angle is ",result*180/Math.PI);
-        //let result = Math.atan2(p3.substract(p1).y,p3.substract(p1).x)-Math.atan2(p2.substract(p1).y,p2.substract(p1).x);
-        return result;
+        //console.log("Computing angle between ",p1.index,p2.index,p3.index);
+        let v1 = p1.substract(p2);
+        let v2 = p3.substract(p2);
+        let dot = v1.x*v2.x + v1.y*v2.y;
+        let det = v1.x*v2.y - v1.y*v2.x;
+        let angle = Math.atan2(det,dot);
+        let degrees = angle*180/Math.PI
+        //console.log(angle,angle*180/Math.PI);
+        return degrees;
     }
     
     direction(p1,p2,p3){
@@ -192,20 +193,23 @@ class Delaunay{
     }
 
     findNextCandidate(side,p,q){
+
         let sortedArrayAdj = [];
         let candidate = null;
         let nextCanditate = null;
 
-        if(side == "left"){
-            console.log("Looking for left canditate between ",p.index,q.index);
+        if(side == "right"){
+            //console.log("Looking for right canditate");
             //Trying to find a potential candidate in the left hull P
-            console.log("Adj is ",JSON.stringify(p),this.adjencyList[p.index]);
-            for(let i = 0;i<this.adjencyList[p.index].length;i++){
-                let pt = this.pts[this.adjencyList[p.index][i]];
-                sortedArrayAdj.push([this.adjencyList[p.index][i],this.computeClockwiseAngle(q,p,pt)]);
+            //console.log("Adj is ",JSON.stringify(q),this.adjencyList[q.index]);
+
+            for(let i = 0;i<this.adjencyList[q.index].length;i++){
+                let pt = this.pts[this.adjencyList[q.index][i]];
+                sortedArrayAdj.push([this.adjencyList[p.index][i],this.computeClockwiseAngle(p,q,pt)])
             }
             sortedArrayAdj.sort(function(a,b){return a[1]-b[1];});
-            console.log("points are ",sortedArrayAdj);
+            //console.log("points are ",sortedArrayAdj);
+
             if(sortedArrayAdj.length === 1){
                 return sortedArrayAdj[0];
             }
@@ -216,7 +220,7 @@ class Delaunay{
                 }
                 nextCanditate = sortedArrayAdj[i+1];
                 
-                if(!this.pts[nextCanditate[0]].inCircle(q,p,this.pts[candidate[0]])){
+                if(!this.pts[nextCanditate[0]].inCircle(this.pts[candidate[0]],q,p)){
                     //nextCanditate is outside the circumcirlce candidate,p,q : candidate is our target
                     return candidate;
                 }
@@ -224,34 +228,36 @@ class Delaunay{
             
             return nextCanditate;
 
-        }else if(side == "right"){
-            console.log("Looking for right canditate");
-            //Trying to find a potential candidate in the right hull Q
-            for(let i = 0;i<this.adjencyList[q.index].length;i++){
-                let pt = this.pts[this.adjencyList[q.index][i]];
-                sortedArrayAdj.push([this.adjencyList[q.index][i],(-this.computeClockwiseAngle(p,q,pt)+Math.PI/4)%(2*Math.PI)]);
+        }else if(side == "left"){
+            //console.log("Looking for left canditate");
+            //console.log("Adj is ",JSON.stringify(p),this.adjencyList[p.index]);
+
+            for(let i = 0;i<this.adjencyList[p.index].length;i++){
+                let pt = this.pts[this.adjencyList[p.index][i]];
+                sortedArrayAdj.push([this.adjencyList[p.index][i],-this.computeClockwiseAngle(q,p,pt)])
             }
-            /*for(let el in this.adjencyList[q.index]){
-                //switch angle to anti-clockwise : -this.computeClockwiseAngle(q,p,this.pts[el])+Math.PI/4)%(2*Math.PI) : 
-                sortedArrayAdj.push([this.pts[el].index,(-this.computeClockwiseAngle(p,q,this.pts[el])+Math.PI/4)%(2*Math.PI)]);
-            }*/
+
             sortedArrayAdj.sort(function(a,b){return a[1]-b[1];});
-            console.log("points are ",sortedArrayAdj);
+            //console.log("points are ",sortedArrayAdj);
+
             if(sortedArrayAdj.length === 1){
                 return sortedArrayAdj[0];
             }
+
             for(let i = 0;i<sortedArrayAdj.length-1;i++){
                 candidate = sortedArrayAdj[i];
                 if(candidate[1]>180){
                     return null;
                 }
+
                 nextCanditate = sortedArrayAdj[i+1];
                 
-                if(!this.pts[nextCanditate[0]].inCircle(p,this.pts[candidate[0]],q)){
+                if(!this.pts[nextCanditate[0]].inCircle(this.pts[candidate[0]],q,p)){
                     //nextCanditate is outside the circumcirlce candidate,p,q : candidate is our target
                     return candidate;
                 }
             }
+            
             return nextCanditate;
 
         }else{ 
