@@ -120,11 +120,36 @@ class Delaunay{
         q.cwnext = p.index;
         cpP.cwnext = cpQ.index;
         cpQ.ccwnext = cpP.index;
-        let leftCandidate = this.findNextCandidate("left",p,q);
-        let rightCandidate = this.findNextCandidate("right",p,q);
+        
+
+        do{
+            let leftCandidate = this.findNextCandidate("left",p,q);
+            let rightCandidate = this.findNextCandidate("right",p,q);
+            if(leftCandidate && rightCandidate){
+                if(!leftCandidate.inCircle(p,rightCandidate,q)){
+                    this.adjencyList[rightCandidate.index].push(p.index);
+                    this.adjencyList[p.index].push(rightCandidate.index);
+                    q = rightCandidate;
+                }else{
+                    this.adjencyList[leftCandidate.index].push(q.index);
+                    this.adjencyList[q.index].push(leftCandidate.index);
+                    p = leftCandidate;
+                }
+            }else if(leftCandidate){
+                this.adjencyList[leftCandidate.index].push(q.index);
+                this.adjencyList[q.index].push(leftCandidate.index);
+                p = leftCandidate;
+            }else if(rightCandidate){
+                this.adjencyList[rightCandidate.index].push(p.index);
+                this.adjencyList[p.index].push(rightCandidate.index);
+                q = rightCandidate;
+            }
+        }while((leftCandidate || rightCandidate));
+
 
         console.log("Next candidate on left is ",JSON.stringify(leftCandidate));
         console.log("Next candidate on right is ",JSON.stringify(rightCandidate));
+        
         let start = p;
         let hull = [];
         do{
@@ -222,11 +247,11 @@ class Delaunay{
                 
                 if(!nextCanditate[0].inCircle(candidate[0],q,p)){
                     //nextCanditate is outside the circumcirlce candidate,p,q : candidate is our target
-                    return candidate;
+                    return candidate[0];
                 }
             }
             
-            return nextCanditate;
+            return nextCanditate[0];
 
         }else if(side == "left"){
             //console.log("Looking for left canditate");
@@ -254,11 +279,11 @@ class Delaunay{
                 
                 if(!nextCanditate[0].inCircle(candidate[0],q,p)){
                     //nextCanditate is outside the circumcirlce candidate,p,q : candidate is our target
-                    return candidate;
+                    return candidate[0];
                 }
             }
             
-            return nextCanditate;
+            return nextCanditate[0];
 
         }else{ 
             console.log("Wrong format for side");
