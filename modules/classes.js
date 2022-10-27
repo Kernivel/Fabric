@@ -16,7 +16,7 @@ class Point{
     
     inCircle(a,b,c){
         //!!! inCircle works when a,b,c are in clocwise order !!!
-        console.log("Points are",JSON.stringify(a),JSON.stringify(b),JSON.stringify(c),JSON.stringify(this));
+        //console.log("Points are",JSON.stringify(a),JSON.stringify(b),JSON.stringify(c),JSON.stringify(this));
         let ax_ = a.x-this.x;
         let ay_ = a.y-this.y;
         let bx_ = b.x-this.x;

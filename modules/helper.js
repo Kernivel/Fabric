@@ -20,6 +20,8 @@ function fetchMatchingScript(){
             let delaun = new Delaunay(canvas);
             delaun.createPoints(20);
             delaun.delaunization(0,20);
+            console.log("Done delaun");
+            delaun.drawAdjency();
             break;
         default:
             ctx.strokeText("Select a mode",canvas.width/2-50,canvas.height/2-50);
