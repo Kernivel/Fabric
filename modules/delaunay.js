@@ -39,16 +39,16 @@ class Delaunay{
         if(dist == 2){
             let a = this.pts[start];
             let b = this.pts[start+1];
-            this.ctx.beginPath();
+            /*this.ctx.beginPath();
             this.ctx.strokeStyle = "black";
             this.ctx.lineWidth = 3;
             this.ctx.moveTo(a.x,a.y);
             this.ctx.lineTo(b.x,b.y);
-            this.ctx.stroke();
+            this.ctx.stroke();*/
             hull = this.initHull(start,end);
             return hull;
         }else if(dist == 3){
-            drawTriangle(this.pts[start],this.pts[start+1],this.pts[start+2]);
+            //drawTriangle(this.pts[start],this.pts[start+1],this.pts[start+2]);
             hull = this.initHull(start,end);
             return hull;
         }else{
@@ -110,10 +110,10 @@ class Delaunay{
         q.cwnext = p.index;
         cpP.cwnext = cpQ.index;
         cpQ.ccwnext = cpP.index;
-        this.adjencyList[p.index].push(q.index);
-        this.adjencyList[q.index].push(p.index);
-        this.adjencyList[cpP.index].push(cpQ.index);
-        this.adjencyList[cpQ.index].push(cpP.index);
+        this.adjencyList[p.index].add(q.index);
+        this.adjencyList[q.index].add(p.index);
+        this.adjencyList[cpP.index].add(cpQ.index);
+        this.adjencyList[cpQ.index].add(cpP.index);
         
         let leftCandidate = null;
         let rightCandidate = null;
@@ -128,14 +128,14 @@ class Delaunay{
                 console.log("Right adj",JSON.stringify(this.adjencyList[rightCandidate.index]));
                 if(!leftCandidate.inCircle(p,rightCandidate,q)){
                     console.log("Left candidate : ",leftCandidate.index," isn't in circumcircle :",p.index,rightCandidate.index,q.index);
-                    this.adjencyList[rightCandidate.index].push(p.index);
-                    this.adjencyList[p.index].push(rightCandidate.index);
+                    this.adjencyList[rightCandidate.index].add(p.index);
+                    this.adjencyList[p.index].add(rightCandidate.index);
                     console.log("Moving q from:",q.index,"to :",rightCandidate.index);
                     q = rightCandidate;
                 }else{
                     console.log("Right candidate : ",rightCandidate.index,"isn't in circumcircle :",p.index,leftCandidate.index,q.index);
-                    this.adjencyList[leftCandidate.index].push(q.index);
-                    this.adjencyList[q.index].push(leftCandidate.index);
+                    this.adjencyList[leftCandidate.index].add(q.index);
+                    this.adjencyList[q.index].add(leftCandidate.index);
                     console.log("Moving p from:",p.index,"to :",leftCandidate.index);
                     p = leftCandidate;
                 }
@@ -143,16 +143,16 @@ class Delaunay{
                 console.log("No right candidate");
                 console.log("Left cand",JSON.stringify(leftCandidate.index));
                 console.log("Left adj",JSON.stringify(this.adjencyList[leftCandidate.index]));
-                this.adjencyList[leftCandidate.index].push(q.index);
-                this.adjencyList[q.index].push(leftCandidate.index);
+                this.adjencyList[leftCandidate.index].add(q.index);
+                this.adjencyList[q.index].add(leftCandidate.index);
                 console.log("Moving p from:",p.index,"to :",leftCandidate.index);
                 p = leftCandidate;
             }else if(rightCandidate){
                 console.log("No left candidate");
                 console.log("Right cand",JSON.stringify(rightCandidate.index));
                 console.log("Right adj",JSON.stringify(this.adjencyList[rightCandidate.index]));
-                this.adjencyList[rightCandidate.index].push(p.index);
-                this.adjencyList[p.index].push(rightCandidate.index);
+                this.adjencyList[rightCandidate.index].add(p.index);
+                this.adjencyList[p.index].add(rightCandidate.index);
                 console.log("Moving q from:",q.index,"to :",rightCandidate.index);
                 q = rightCandidate;
             }
@@ -206,10 +206,10 @@ class Delaunay{
             this.pts[start+1].cwnext = start;
             this.pts[start+1].ccwnext = start;
 
-            this.adjencyList[start] = [];
-            this.adjencyList[start+1] = [];
-            this.adjencyList[start].push(start+1);
-            this.adjencyList[start+1].push(start);
+            this.adjencyList[start] = new Set();
+            this.adjencyList[start+1] = new Set();
+            this.adjencyList[start].add(start+1);
+            this.adjencyList[start+1].add(start);
         }else if(dist  == 3){
     
             if (this.direction(this.pts[start],this.pts[start+1],this.pts[start+2])<0){
@@ -227,12 +227,12 @@ class Delaunay{
                 this.pts[start+1].cwnext = start;
                 this.pts[start+1].ccwnext = start+2;
             }
-            this.adjencyList[start] = [];
-            this.adjencyList[start+1] = [];
-            this.adjencyList[start+2] = [];
-            this.adjencyList[start].push(start+1,start+2);
-            this.adjencyList[start+1].push(start,start+2);
-            this.adjencyList[start+2].push(start,start+1);
+            this.adjencyList[start] = new Set();
+            this.adjencyList[start+1] = new Set();
+            this.adjencyList[start+2] = new Set();
+            this.adjencyList[start].add(start+1,start+2);
+            this.adjencyList[start+1].add(start,start+2);
+            this.adjencyList[start+2].add(start,start+1);
         }else{
             console.log("Errorr : No init hull for dist: ",dist);
         }
@@ -251,8 +251,8 @@ class Delaunay{
             //Trying to find a potential candidate in the left hull P
             //console.log("Adj is ",JSON.stringify(q),this.adjencyList[q.index]);
 
-            for(let i = 0;i<this.adjencyList[q.index].length;i++){
-                let pt = this.pts[this.adjencyList[q.index][i]];
+            for(let item of this.adjencyList[q.index].values()){
+                let pt = this.pts[item];
                 let angle = this.computeClockwiseAngle(p,q,pt);
                 sortedArrayAdj.push([pt,angle]);
                 console.log("Angle was btween",p.index,q.index,pt.index,":",angle);
@@ -281,6 +281,9 @@ class Delaunay{
                     console.log("return candidate[0]",JSON.stringify(candidate[0]));
                     return candidate[0];
                 }
+                //break link between current candite and p
+                this.adjencyList[candidate.index].delete(p.index);
+                this.adjencyList[p.index].delete(candidate.index);
             }
             console.log("return nextCanditate[0]",JSON.stringify(nextCanditate[0]));
             return nextCanditate[0];
@@ -289,8 +292,8 @@ class Delaunay{
             console.log("Looking for left canditate");
             //console.log("Adj is ",JSON.stringify(p),this.adjencyList[p.index]);
 
-            for(let i = 0;i<this.adjencyList[p.index].length;i++){
-                let pt = this.pts[this.adjencyList[p.index][i]];
+            for(let item of this.adjencyList[p.index].values()){
+                let pt = this.pts[item];
                 let angle = -this.computeClockwiseAngle(q,p,pt);
                 sortedArrayAdj.push([pt,angle])
                 console.log("Angle was btween",q.index,p.index,pt.index,":",angle);
@@ -319,6 +322,9 @@ class Delaunay{
                     //nextCanditate is outside the circumcirlce candidate,p,q : candidate is our target
                     return candidate[0];
                 }
+                //break link between current candite and q
+                this.adjencyList[candidate.index].delete(q.index);
+                this.adjencyList[q.index].delete(candidate.index);
             }
             
             return nextCanditate[0];
@@ -334,11 +340,14 @@ class Delaunay{
         for(let el in this.adjencyList){
             //adj = this.adjencyList[i];
             //console.log("Adj is adj",JSON.stringify(el));
-            ctx.beginPath();
-            for(let line in this.adjencyList[el]){
+            //ctx.beginPath();
+            console.log(el);
+            for(let line of this.adjencyList[el].values()){
+                console.log(line);
                 ctx.beginPath();
                 ctx.moveTo(this.pts[el].x,this.pts[el].y);
                 ctx.lineTo(this.pts[line].x,this.pts[line].y);
+                ctx.lineTo(this.pts[el].x,this.pts[el].y);
                 ctx.stroke();
             }
         }
