@@ -121,7 +121,7 @@ class Delaunay{
             leftCandidate = this.findNextCandidate("left",p,q);
             rightCandidate = this.findNextCandidate("right",p,q);
             console.log(JSON.stringify(this.adjencyList));
-            if(leftCandidate && rightCandidate){
+            if(leftCandidate != null && rightCandidate != null){
                 console.log("Left cand",JSON.stringify(leftCandidate.index));
                 console.log("Left adj",JSON.stringify(this.adjencyList[leftCandidate.index]));
                 console.log("Right cand",JSON.stringify(rightCandidate.index));
@@ -139,28 +139,30 @@ class Delaunay{
                     console.log("Moving p from:",p.index,"to :",leftCandidate.index);
                     p = leftCandidate;
                 }
-            }else if(leftCandidate){
-                console.log("No right candidate");
-                console.log("Left cand",JSON.stringify(leftCandidate.index));
-                console.log("Left adj",JSON.stringify(this.adjencyList[leftCandidate.index]));
-                this.adjencyList[leftCandidate.index].add(q.index);
-                this.adjencyList[q.index].add(leftCandidate.index);
-                console.log("Moving p from:",p.index,"to :",leftCandidate.index);
-                p = leftCandidate;
-            }else if(rightCandidate){
-                console.log("No left candidate");
-                console.log("Right cand",JSON.stringify(rightCandidate.index));
-                console.log("Right adj",JSON.stringify(this.adjencyList[rightCandidate.index]));
-                this.adjencyList[rightCandidate.index].add(p.index);
-                this.adjencyList[p.index].add(rightCandidate.index);
-                console.log("Moving q from:",q.index,"to :",rightCandidate.index);
-                q = rightCandidate;
-            }
-        }while((leftCandidate || rightCandidate));
+                }else if(leftCandidate != null){
+                    console.log("No right candidate");
+                    console.log("Left cand",JSON.stringify(leftCandidate.index));
+                    console.log("Left adj",JSON.stringify(this.adjencyList[leftCandidate.index]));
+                    this.adjencyList[leftCandidate.index].add(q.index);
+                    this.adjencyList[q.index].add(leftCandidate.index);
+                    console.log("Moving p from:",p.index,"to :",leftCandidate.index);
+                    p = leftCandidate;
+                }else if(rightCandidate != null){
+                    console.log("No left candidate");
+                    console.log("Right cand",JSON.stringify(rightCandidate.index));
+                    console.log("Right adj",JSON.stringify(this.adjencyList[rightCandidate.index]));
+                    this.adjencyList[rightCandidate.index].add(p.index);
+                    this.adjencyList[p.index].add(rightCandidate.index);
+                    console.log("Moving q from:",q.index,"to :",rightCandidate.index);
+                    q = rightCandidate;
+                }else{
+                    console.log("No choices made");
+                }
+        
+        }while((leftCandidate != null || rightCandidate != null));
 
 
-        console.log("Next candidate on left is ",JSON.stringify(leftCandidate));
-        console.log("Next candidate on right is ",JSON.stringify(rightCandidate));
+        
         
         let start = p;
         let hull = [];
@@ -230,9 +232,12 @@ class Delaunay{
             this.adjencyList[start] = new Set();
             this.adjencyList[start+1] = new Set();
             this.adjencyList[start+2] = new Set();
-            this.adjencyList[start].add(start+1,start+2);
-            this.adjencyList[start+1].add(start,start+2);
-            this.adjencyList[start+2].add(start,start+1);
+            this.adjencyList[start].add(start+1);
+            this.adjencyList[start].add(start+2);
+            this.adjencyList[start+1].add(start);
+            this.adjencyList[start+1].add(start+2);
+            this.adjencyList[start+2].add(start);
+            this.adjencyList[start+2].add(start+1);
         }else{
             console.log("Errorr : No init hull for dist: ",dist);
         }
@@ -245,7 +250,7 @@ class Delaunay{
         let sortedArrayAdj = [];
         let candidate = null;
         let nextCanditate = null;
-
+        console.log("P : ",p.index,"Q : ",q.index);
         if(side == "right"){
             console.log("Looking for right canditate");
             //Trying to find a potential candidate in the left hull P
@@ -255,26 +260,31 @@ class Delaunay{
                 let pt = this.pts[item];
                 let angle = this.computeClockwiseAngle(p,q,pt);
                 sortedArrayAdj.push([pt,angle]);
-                console.log("Angle was btween",p.index,q.index,pt.index,":",angle);
+                //console.log("Angle was btween",p.index,q.index,pt.index,":",angle);
             }
             sortedArrayAdj.sort(function(a,b){return a[1]-b[1];});
-            console.log("points are ",JSON.stringify(sortedArrayAdj));
+            console.log("Sorted points are ",JSON.stringify(sortedArrayAdj));
             
             if(sortedArrayAdj.length === 1){
                 candidate = sortedArrayAdj[0];
+                
                 if(candidate[1]<=0 || candidate[1]>180){
+                    console.log("Returned null ortedArrayAdj.length is 1");
                     return null;
                 }else{
+                    console.log("Returned candidate[0] ortedArrayAdj.length is 1",candidate[0].index);
                     return candidate[0];
                 }
             }
             for(let i = 0;i<sortedArrayAdj.length-1;i++){
                 candidate = sortedArrayAdj[i];
+                nextCanditate = sortedArrayAdj[i+1];
                 if(candidate[1]<=0 || candidate[1]>180){
-                    console.log("Return null");
+                    console.log("Candidate broke rule 180 return null");
+                    continue;
                     return null;
                 }
-                nextCanditate = sortedArrayAdj[i+1];
+                
                 
                 if(!nextCanditate[0].inCircle(candidate[0],q,p)){
                     //nextCanditate is outside the circumcirlce candidate,p,q : candidate is our target
@@ -296,7 +306,7 @@ class Delaunay{
                 let pt = this.pts[item];
                 let angle = -this.computeClockwiseAngle(q,p,pt);
                 sortedArrayAdj.push([pt,angle])
-                console.log("Angle was btween",q.index,p.index,pt.index,":",angle);
+                //console.log("Angle was btween",q.index,p.index,pt.index,":",angle);
             }
 
             sortedArrayAdj.sort(function(a,b){return a[1]-b[1];});
@@ -304,29 +314,36 @@ class Delaunay{
             if(sortedArrayAdj.length === 1){
                 candidate = sortedArrayAdj[0];
                 if(candidate[1]<=0 || candidate[1]>180){
+                    console.log("Returned null ortedArrayAdj.length is 1");
+                    
                     return null;
                 }else{
+                    console.log("Returned candidate[0] ortedArrayAdj.length is 1",candidate[0].index);
                     return candidate[0];
                 }
             }
 
             for(let i = 0;i<sortedArrayAdj.length-1;i++){
                 candidate = sortedArrayAdj[i];
+                nextCanditate = sortedArrayAdj[i+1];
                 if(candidate[1]<=0 || candidate[1]>180){
+                    console.log("Candidate broke rule 180 return null");
+                    continue;
                     return null;
                 }
 
-                nextCanditate = sortedArrayAdj[i+1];
+                
                 
                 if(!nextCanditate[0].inCircle(candidate[0],q,p)){
                     //nextCanditate is outside the circumcirlce candidate,p,q : candidate is our target
+                    console.log("return candidate[0]",JSON.stringify(candidate[0]));
                     return candidate[0];
                 }
                 //break link between current candite and q
                 this.adjencyList[candidate.index].delete(q.index);
                 this.adjencyList[q.index].delete(candidate.index);
             }
-            
+            console.log("Return nextCanditate[0]",JSON.stringify(nextCanditate[0]));
             return nextCanditate[0];
 
         }else{ 
@@ -341,9 +358,9 @@ class Delaunay{
             //adj = this.adjencyList[i];
             //console.log("Adj is adj",JSON.stringify(el));
             //ctx.beginPath();
-            console.log(el);
+            //console.log(el);
             for(let line of this.adjencyList[el].values()){
-                console.log(line);
+                //console.log(line);
                 ctx.beginPath();
                 ctx.moveTo(this.pts[el].x,this.pts[el].y);
                 ctx.lineTo(this.pts[line].x,this.pts[line].y);
