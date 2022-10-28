@@ -6,7 +6,7 @@ canvas.height = 1000;
 var ctx = canvas.getContext("2d");
 ctx.font = "50px Roboto";
 ctx.strokeText("Select a mode",canvas.width/2-50,canvas.height/2-50);
-var pts = [];
+//var pts = [];
 
 function dot(x,y){
     ctx.fillStyle = "#000000"
