@@ -112,20 +112,22 @@ class Delaunay{
         cpQ.ccwnext = cpP.index;
         this.adjencyList[p.index].add(q.index);
         this.adjencyList[q.index].add(p.index);
-        this.adjencyList[cpP.index].add(cpQ.index);
-        this.adjencyList[cpQ.index].add(cpP.index);
+        //this.adjencyList[cpP.index].add(cpQ.index);
+        //this.adjencyList[cpQ.index].add(cpP.index);
         
         let leftCandidate = null;
         let rightCandidate = null;
         do{
+            console.log("P : ",p.index,"Q : ",q.index);
             leftCandidate = this.findNextCandidate("left",p,q);
             rightCandidate = this.findNextCandidate("right",p,q);
-            console.log(JSON.stringify(this.adjencyList));
+            //console.log(JSON.stringify(this.adjencyList));
             if(leftCandidate != null && rightCandidate != null){
-                console.log("Left cand",JSON.stringify(leftCandidate.index));
-                console.log("Left adj",JSON.stringify(this.adjencyList[leftCandidate.index]));
-                console.log("Right cand",JSON.stringify(rightCandidate.index));
-                console.log("Right adj",JSON.stringify(this.adjencyList[rightCandidate.index]));
+                
+                //console.log("Left cand",JSON.stringify(leftCandidate.index));
+                //console.log("Left adj",JSON.stringify(this.adjencyList[leftCandidate.index]));
+                //console.log("Right cand",JSON.stringify(rightCandidate.index));
+                //console.log("Right adj",JSON.stringify(this.adjencyList[rightCandidate.index]));
                 if(!leftCandidate.inCircle(p,rightCandidate,q)){
                     console.log("Left candidate : ",leftCandidate.index," isn't in circumcircle :",p.index,rightCandidate.index,q.index);
                     this.adjencyList[rightCandidate.index].add(p.index);
@@ -204,14 +206,13 @@ class Delaunay{
         if(dist == 2){
             this.pts[start].cwnext = start+1;
             this.pts[start].ccwnext = start+1;
-            
             this.pts[start+1].cwnext = start;
             this.pts[start+1].ccwnext = start;
-
             this.adjencyList[start] = new Set();
             this.adjencyList[start+1] = new Set();
             this.adjencyList[start].add(start+1);
             this.adjencyList[start+1].add(start);
+            //drawLine2Points(this.pts[start],this.pts[start+1]);
         }else if(dist  == 3){
     
             if (this.direction(this.pts[start],this.pts[start+1],this.pts[start+2])<0){
@@ -238,6 +239,7 @@ class Delaunay{
             this.adjencyList[start+1].add(start+2);
             this.adjencyList[start+2].add(start);
             this.adjencyList[start+2].add(start+1);
+            //drawTriangle(this.pts[start],this.pts[start+1],this.pts[start+2]);
         }else{
             console.log("Errorr : No init hull for dist: ",dist);
         }
@@ -250,108 +252,98 @@ class Delaunay{
         let sortedArrayAdj = [];
         let candidate = null;
         let nextCanditate = null;
-        console.log("P : ",p.index,"Q : ",q.index);
+        
         if(side == "right"){
-            console.log("Looking for right canditate");
-            //Trying to find a potential candidate in the left hull P
-            //console.log("Adj is ",JSON.stringify(q),this.adjencyList[q.index]);
-
-            for(let item of this.adjencyList[q.index].values()){
-                let pt = this.pts[item];
-                let angle = this.computeClockwiseAngle(p,q,pt);
-                sortedArrayAdj.push([pt,angle]);
-                //console.log("Angle was btween",p.index,q.index,pt.index,":",angle);
-            }
-            sortedArrayAdj.sort(function(a,b){return a[1]-b[1];});
-            console.log("Sorted points are ",JSON.stringify(sortedArrayAdj));
-            
+            sortedArrayAdj = this.createClockwisePoints(side,p,q);
+            console.log("Sorted array is ",sortedArrayAdj);
             if(sortedArrayAdj.length === 1){
                 candidate = sortedArrayAdj[0];
-                
-                if(candidate[1]<=0 || candidate[1]>180){
-                    console.log("Returned null ortedArrayAdj.length is 1");
-                    return null;
-                }else{
-                    console.log("Returned candidate[0] ortedArrayAdj.length is 1",candidate[0].index);
-                    return candidate[0];
-                }
+                console.log("Only one candidate returning",candidate[0].index)
+                return candidate[0];
             }
             for(let i = 0;i<sortedArrayAdj.length-1;i++){
                 candidate = sortedArrayAdj[i];
-                nextCanditate = sortedArrayAdj[i+1];
-                if(candidate[1]<=0 || candidate[1]>180){
-                    console.log("Candidate broke rule 180 return null");
-                    continue;
-                    return null;
-                }
-                
-                
+                nextCanditate = sortedArrayAdj[i+1];            
                 if(!nextCanditate[0].inCircle(candidate[0],q,p)){
                     //nextCanditate is outside the circumcirlce candidate,p,q : candidate is our target
-                    console.log("return candidate[0]",JSON.stringify(candidate[0]));
+                    console.log("nextCanditate ",nextCanditate[0].index," is OUTSIDE the circumcirlce : [",candidate[0].index,p.index,q.index,"] returning",candidate[0].index);
+                    //console.log("return candidate[0]",JSON.stringify(candidate[0]));
                     return candidate[0];
                 }
-                //break link between current candite and p
-                this.adjencyList[candidate.index].delete(p.index);
-                this.adjencyList[p.index].delete(candidate.index);
+                console.log("nextCanditate ",nextCanditate[0].index," is INSIDE the circumcirlce : [",candidate[0].index,p.index,q.index,"] skipping",candidate[0].index);
+                //break link between current candidate and p
+                console.log("Deleting edges between",candidate[0].index,q.index);
+                this.adjencyList[candidate[0].index].delete(q.index);
+                this.adjencyList[q.index].delete(candidate[0].index);
             }
-            console.log("return nextCanditate[0]",JSON.stringify(nextCanditate[0]));
-            return nextCanditate[0];
-
-        }else if(side == "left"){
-            console.log("Looking for left canditate");
-            //console.log("Adj is ",JSON.stringify(p),this.adjencyList[p.index]);
-
-            for(let item of this.adjencyList[p.index].values()){
-                let pt = this.pts[item];
-                let angle = -this.computeClockwiseAngle(q,p,pt);
-                sortedArrayAdj.push([pt,angle])
-                //console.log("Angle was btween",q.index,p.index,pt.index,":",angle);
+            console.log("Reached end of for loop returning nextCandidate");
+            if(nextCanditate){
+                console.log(nextCanditate[0].index);
+                return nextCanditate[0];
             }
-
-            sortedArrayAdj.sort(function(a,b){return a[1]-b[1];});
-            console.log("Sorted points are ",JSON.stringify(sortedArrayAdj));
-            if(sortedArrayAdj.length === 1){
-                candidate = sortedArrayAdj[0];
-                if(candidate[1]<=0 || candidate[1]>180){
-                    console.log("Returned null ortedArrayAdj.length is 1");
-                    
-                    return null;
-                }else{
-                    console.log("Returned candidate[0] ortedArrayAdj.length is 1",candidate[0].index);
-                    return candidate[0];
-                }
-            }
-
-            for(let i = 0;i<sortedArrayAdj.length-1;i++){
-                candidate = sortedArrayAdj[i];
-                nextCanditate = sortedArrayAdj[i+1];
-                if(candidate[1]<=0 || candidate[1]>180){
-                    console.log("Candidate broke rule 180 return null");
-                    continue;
-                    return null;
-                }
-
-                
-                
-                if(!nextCanditate[0].inCircle(candidate[0],q,p)){
-                    //nextCanditate is outside the circumcirlce candidate,p,q : candidate is our target
-                    console.log("return candidate[0]",JSON.stringify(candidate[0]));
-                    return candidate[0];
-                }
-                //break link between current candite and q
-                this.adjencyList[candidate.index].delete(q.index);
-                this.adjencyList[q.index].delete(candidate.index);
-            }
-            console.log("Return nextCanditate[0]",JSON.stringify(nextCanditate[0]));
-            return nextCanditate[0];
-
-        }else{ 
-            console.log("Wrong format for side");
             return null;
+        }else if(side == "left"){
+            sortedArrayAdj = this.createClockwisePoints(side,p,q);
+            console.log("Sorted array is ",sortedArrayAdj);
+            if(sortedArrayAdj.length === 1){
+                candidate = sortedArrayAdj[0];
+                console.log("Only one candidate returning",candidate[0].index)
+                return candidate[0];
+            }
+            for(let i = 0;i<sortedArrayAdj.length-1;i++){
+                candidate = sortedArrayAdj[i];
+                nextCanditate = sortedArrayAdj[i+1];                
+                if(!nextCanditate[0].inCircle(candidate[0],q,p)){
+                    //nextCanditate is outside the circumcirlce candidate,p,q : candidate is our target
+                    console.log("return candidate[0] ",JSON.stringify(candidate[0]));
+                    console.log("nextCanditate ",nextCanditate[0].index," is OUTSIDE the circumcirlce : [",candidate[0].index,p.index,q.index,"] returning",candidate[0].index);
+                    return candidate[0];
+                }
+                console.log("nextCanditate ",nextCanditate[0].index," is INSIDE the circumcirlce : [",candidate[0].index,p.index,q.index,"] skipping",candidate[0].index);
+                //break link between current candite and q
+                console.log("Deleting edges between",candidate[0].index,p.index)
+                this.adjencyList[candidate[0].index].delete(p.index);
+                this.adjencyList[p.index].delete(candidate[0].index);
+            }
+            console.log("Reached end of for loop returning nextCandidate");
+            if(nextCanditate){
+                console.log(nextCanditate[0].index);
+                return nextCanditate[0];
+            }
+            return null;
+
         }
     }
 
+    createClockwisePoints(side,p,q){
+        let sortedArrayAdj = [];
+        if(side == "left"){
+            console.log("Looking for left canditate");
+            //console.log("Adj is ",JSON.stringify(p),this.adjencyList[p.index]);
+            for(let item of this.adjencyList[p.index].values()){
+                let pt = this.pts[item];
+                let angle = -this.computeClockwiseAngle(q,p,pt);
+                if(angle>0 && angle<180){
+                    sortedArrayAdj.push([pt,angle]);
+                }
+                //console.log("Angle was btween",q.index,p.index,pt.index,":",angle);
+            }
+        }else{
+            console.log("Looking for right canditate");
+            //console.log("Adj is ",JSON.stringify(q),this.adjencyList[q.index]);
+            for(let item of this.adjencyList[q.index].values()){
+                let pt = this.pts[item];
+                let angle = this.computeClockwiseAngle(p,q,pt);
+                //console.log("Angle was btween",p.index,q.index,pt.index,":",angle);
+                if(angle>0 && angle<180){
+                    sortedArrayAdj.push([pt,angle]);
+                }
+            }
+        }
+        sortedArrayAdj.sort(function(a,b){return a[1]-b[1];});
+        return sortedArrayAdj;
+
+    }
     drawAdjency(){
         console.log("In draw",this.adjencyList);
         for(let el in this.adjencyList){

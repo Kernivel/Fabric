@@ -41,14 +41,25 @@ function animateTriangle(){
 
 
 function drawTriangle(a,b,c){
-    ctx.strokeStyle = "black";
-    ctx.lineWidth = 3;
+    console.log("Drawing tri");
+    ctx.strokeStyle = "blue";
+    //ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.moveTo(a.x,a.y);
     ctx.lineTo(b.x,b.y);
     ctx.lineTo(c.x,c.y);
     ctx.lineTo(a.x,a.y);
     ctx.stroke();
+    ctx.strokeStyle = "black";
+}
+
+function drawLine2Points(a,b){
+    ctx.strokeStyle = "blue";
+    ctx.beginPath();
+    ctx.moveTo(a.x,a.y);
+    ctx.lineTo(b.x,b.y);
+    ctx.stroke();
+    ctx.strokeStyle = "black";
 }
 
 function getSidePlane(a,b,p){
