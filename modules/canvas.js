@@ -3,9 +3,9 @@ canvas.width  = window.innerWidth;
 canvas.height = window.innerHeight;
 //canvas.width  = 500;
 canvas.width  = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.height = window.innerHeight*0.9;
 canvas.style.width ='100%';
-canvas.style.height='100%';
+canvas.style.height='90%';
 var ctx = canvas.getContext("2d");
 ctx.font = "50px Roboto";
 ctx.strokeText("Select a mode",canvas.width/2-50,canvas.height/2-50);
@@ -22,7 +22,35 @@ function dotColor(x,y,color){
 
 function createPoints(nbPoints){
     let pts = [];
+
     for (let i = 0;i<nbPoints;i++){
+        
+        let x = Math.random()*canvas.width;
+        let y = Math.random()*canvas.height;
+        pts.push(new Point(x,y));
+    }
+    pts.sort(function(a,b){if(a.x === b.x)return a.y-b.y;
+                            return a.x-b.x});
+    for(let i = 0;i<pts.length;i++){
+        pts[i].index = i;
+    }
+    return pts;
+};
+
+function createPointsWithBorder(nbPoints){
+    let pts = [];
+    pts.push(new Point(0,0));
+    pts.push(new Point(0,canvas.height));
+    pts.push(new Point(canvas.width,0));
+    pts.push(new Point(canvas.width,canvas.height));
+
+    pts.push(new Point(0,canvas.height/2));
+    pts.push(new Point(canvas.width/2,0));
+    pts.push(new Point(canvas.width,canvas.height/2));
+    pts.push(new Point(canvas.width/2,canvas.height));
+
+    for (let i = 0;i<nbPoints-8;i++){
+        
         let x = Math.random()*canvas.width;
         let y = Math.random()*canvas.height;
         pts.push(new Point(x,y));
@@ -92,7 +120,7 @@ function delaunayAnimation(delaunObj){
     delaunObj.delaunization(0,delaunObj.pts.length);
     drawAdjency(delaunObj);
     delaunObj.updateThrustPts();
-    delaunObj.movePointsThrustBounce();
+    delaunObj.movePointsThrustOffset();
     if(btn.value == "Stop"){
         window.requestAnimationFrame(function(){delaunayAnimation(delaunObj)});
     }

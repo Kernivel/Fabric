@@ -3,7 +3,7 @@ class Delaunay{
     adjencyList = {};
 
     constructor(nbPoints){
-        this.pts = createPoints(nbPoints);
+        this.pts = createPointsWithBorder(nbPoints);
     }
 
     
@@ -70,6 +70,37 @@ class Delaunay{
         }
     }
 
+    movePointsThrustOffset(){
+        for(let i = 0;i<this.pts.length;i++){
+            if(this.pts[i].x<4){
+                this.pts[i].thrustX = 2;
+            }else if(this.pts[i].x>canvas.width-4){
+                this.pts[i].thrustX = -2;
+            }
+            if(this.pts[i].y<4){
+                this.pts[i].thrustY = 2;
+            }else if(this.pts[i].y>canvas.height-4){
+                this.pts[i].thrustY = -2;
+            }
+
+            if(this.pts[i].x == 0 || this.pts[i].x == canvas.width || this.pts[i].y == 0 || this.pts[i].y == canvas.height){
+                this.pts[i].thrustX = 0;
+                this.pts[i].thrustY = 0;
+            }
+
+            this.pts[i].x += this.pts[i].thrustX;
+            
+            this.pts[i].y += this.pts[i].thrustY;
+        }
+        //console.log(this.pts);
+        this.pts.sort(function(a,b){if(a.x === b.x)return a.y-b.y;
+            return a.x-b.x});
+        for(let i = 0;i<this.pts.length;i++){
+            this.pts[i].index = i;
+            ctx.strokeText(i,this.pts[i].x,this.pts[i].y);
+        }
+    }
+
     delaunization(start,end){
         if(this.pts == null){
             //console.log("No points have been created before, use this.createPoints(nbPoints), before calling this function");
@@ -102,7 +133,7 @@ class Delaunay{
 
 
     mergeHulls(leftHull,rightHull){
-        //console.log("starting hull",rightHull);
+        console.log("starting hull",rightHull);
         let q = this.pts[Math.min.apply(null,rightHull)];
         let p = this.pts[Math.max.apply(null,leftHull)];
         let cpP = p;

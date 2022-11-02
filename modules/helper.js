@@ -1,6 +1,7 @@
 var elt = document.querySelector('select');
 var scriptName = "";
 var btn = document.querySelector('input');
+let delaun = null;
 btn.addEventListener('click',updateBtn);
 elt.addEventListener('change',function(){scriptName = elt.value;fetchMatchingScript()});
 
@@ -16,7 +17,7 @@ function fetchMatchingScript(){
             //mainDebug(30);
             break;
         case 'delaunay':
-            let delaun = new Delaunay(20);
+            delaun = new Delaunay(20);
             //delaun.delaunization(0,50);
             //delaunayAnimation(delaun);
             window.requestAnimationFrame(function(){delaunayAnimation(delaun)});
@@ -33,7 +34,12 @@ function fetchMatchingScript(){
 function updateBtn(){
     if (btn.value == "Start"){
         btn.value = "Stop";
-        fetchMatchingScript();
+        if(scriptName == "delaunay"){
+            window.requestAnimationFrame(function(){delaunayAnimation(delaun)});
+        }else{
+            fetchMatchingScript();
+        }
+        
     }else{
         btn.value = "Start";
     }
