@@ -13,19 +13,14 @@ function fetchMatchingScript(){
         case 'debug':
             //mainDebug(30);
             break;
-        case 'triangleP':
-            //mainTriangle(500);
-            let triangle = new Triangle(canvas);
-            triangle.mainTriangle();
-            break;
         case 'delaunay':
-            let delaun = new Delaunay(canvas);
-            ctx.clearRect(0,0,canvas.width,canvas.height);
-            delaun.createPoints(50);
-            delaun.delaunization(0,50);
-            console.log("Done delaun");
-            delaun.drawAdjency();
-            delete delaun;
+            let delaun = new Delaunay(50);
+            //delaun.delaunization(0,50);
+            //delaunayAnimation(delaun);
+            window.requestAnimationFrame(function(){delaunayAnimation(delaun)});
+            //console.log("Done delaun");
+            //drawAdjency(delaun.adjencyList);
+            drawAdjency(delaun);
             break;
         default:
             ctx.strokeText("Select a mode",canvas.width/2-50,canvas.height/2-50);

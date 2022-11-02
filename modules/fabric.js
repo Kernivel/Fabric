@@ -17,7 +17,7 @@ function animate(){
         cnx[i] = find3Mins(i);
         
     }*/
-    ctx.clearRect(0,0,canvas.width,canvas.height);
+    //ctx.clearRect(0,0,canvas.width,canvas.height);
     movePoints();
     connectCloseDots(200);
     if(scriptName == "fabric"){

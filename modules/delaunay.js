@@ -1,40 +1,25 @@
-
-//var ctx = canvas.getContext("2d");
-//var adjencyList = {};
-
 class Delaunay{
     pts = null;
     adjencyList = {};
-    canvas = null;
-    ctx = null;
-    constructor(canvas){
-        this.canvas = canvas;
-        this.ctx = canvas.getContext("2d");
+
+    constructor(nbPoints){
+        this.pts = createPoints(nbPoints);
     }
 
-    createPoints(nbPoints){
-        this.pts = [];
-        for (let i = 0;i<nbPoints;i++){
-            let x = Math.random()*canvas.width;
-            let y = Math.random()*canvas.height;
-            this.pts.push(new Point(x,y));
-        }
-        this.pts.sort(function(a,b){if(a.x === b.x)return a.y-b.y;
-                                return a.x-b.x});
-        ctx.font = "20px Roboto";
-        for(let i = 0;i<this.pts.length;i++){
-            this.pts[i].index = i;
-            ctx.strokeText(i,this.pts[i].x,this.pts[i].y);
-        }
-        //console.log("Created and ordered new set of points",this.pts);
-    };
+    
 
     movePoints(){
         for(let i = 0;i<this.pts.length;i++){
-            let newX = (Math.random()-0.5)*5+this.pts[i][0];
-            let newY = (Math.random()-0.5)*5+this.pts[i][1];
+            let newX = (Math.random()-0.5)+this.pts[i].x;
+            let newY = (Math.random()-0.5)+this.pts[i].y;
             this.pts[i].x= newX;
-            this.pts[i].y = newY;    
+            this.pts[i].y = newY;
+        }
+        console.log(this.pts);
+        this.pts.sort(function(a,b){if(a.x === b.x)return a.y-b.y;
+            return a.x-b.x});
+        for(let i = 0;i<this.pts.length;i++){
+            this.pts[i].index = i;
         }
     }
 
@@ -50,12 +35,6 @@ class Delaunay{
         if(dist == 2){
             let a = this.pts[start];
             let b = this.pts[start+1];
-            /*this.ctx.beginPath();
-            this.ctx.strokeStyle = "black";
-            this.ctx.lineWidth = 3;
-            this.ctx.moveTo(a.x,a.y);
-            this.ctx.lineTo(b.x,b.y);
-            this.ctx.stroke();*/
             hull = this.initHull(start,end);
             return hull;
         }else if(dist == 3){
@@ -355,25 +334,6 @@ class Delaunay{
         return sortedArrayAdj;
 
     }
-    drawAdjency(){
-        console.log("In draw",JSON.stringify(this.adjencyList));
-        console.log(this.ctx);
-        this.ctx.lineWidth = 1
-        ;
-        for(let el in this.adjencyList){
-            //adj = this.adjencyList[i];
-            //console.log("Adj is adj",JSON.stringify(el));
-            //ctx.beginPath();
-            //console.log(el);
-            for(let line of this.adjencyList[el].values()){
-                //console.log(line);
-                this.ctx.beginPath();
-                this.ctx.moveTo(this.pts[el].x,this.pts[el].y);
-                this.ctx.lineTo(this.pts[line].x,this.pts[line].y);
-                this.ctx.lineTo(this.pts[el].x,this.pts[el].y);
-                this.ctx.stroke();
-            }
-        }
-    }
+
 
 };
