@@ -4,3 +4,19 @@
     border-color: black;
     border-color: black;
 }
+
+
+div {
+    /* I added this just for fun */
+    background-color: skyblue;
+    color: white;
+    font-family: Century Gothic;
+    padding: 5px;
+    text-align: center;
+  
+    /* The code that you need to copy */
+    position: relative;
+    left: 0px;
+    right: 0px;
+    /*top: 0px;*/
+  }

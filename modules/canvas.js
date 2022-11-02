@@ -1,8 +1,11 @@
 var canvas = document.getElementById("myCanvas");
 canvas.width  = window.innerWidth;
 canvas.height = window.innerHeight;
-canvas.width  = 1000;
-canvas.height = 1000;
+//canvas.width  = 500;
+canvas.width  = window.innerWidth;
+canvas.height = window.innerHeight;
+canvas.style.width ='100%';
+canvas.style.height='100%';
 var ctx = canvas.getContext("2d");
 ctx.font = "50px Roboto";
 ctx.strokeText("Select a mode",canvas.width/2-50,canvas.height/2-50);
@@ -90,7 +93,9 @@ function delaunayAnimation(delaunObj){
     drawAdjency(delaunObj);
     delaunObj.updateThrustPts();
     delaunObj.movePointsThrustBounce();
-    window.requestAnimationFrame(function(){delaunayAnimation(delaunObj)});
+    if(btn.value == "Stop"){
+        window.requestAnimationFrame(function(){delaunayAnimation(delaunObj)});
+    }
 }
 
 function clampValue(val,min,max){

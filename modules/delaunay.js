@@ -102,7 +102,7 @@ class Delaunay{
 
 
     mergeHulls(leftHull,rightHull){
-        console.log("starting hull",rightHull);
+        //console.log("starting hull",rightHull);
         let q = this.pts[Math.min.apply(null,rightHull)];
         let p = this.pts[Math.max.apply(null,leftHull)];
         let cpP = p;
@@ -203,7 +203,7 @@ class Delaunay{
                 }
         
         }while((leftCandidate != null || rightCandidate != null));
-        console.log("Out of candidte");
+        //console.log("Out of candidte");
 
         
         
@@ -211,8 +211,8 @@ class Delaunay{
         let seen = new Set();
         let hull = [];
         do{
-            console.log("Start is ",start.index);
-            console.log("At :",p.index);
+            //console.log("Start is ",start.index);
+            //console.log("At :",p.index);
             hull.push(p.index);
             if(seen.has(p.index)){
                 break;
@@ -220,7 +220,7 @@ class Delaunay{
             seen.add(p.index);
             p = this.pts[p.cwnext];
         }while(p != start);
-        console.log("New hull",hull);
+        //console.log("New hull",hull);
         return hull;
     }
 

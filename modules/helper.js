@@ -1,5 +1,7 @@
 var elt = document.querySelector('select');
 var scriptName = "";
+var btn = document.querySelector('input');
+btn.addEventListener('click',updateBtn);
 elt.addEventListener('change',function(){scriptName = elt.value;fetchMatchingScript()});
 
 
@@ -14,7 +16,7 @@ function fetchMatchingScript(){
             //mainDebug(30);
             break;
         case 'delaunay':
-            let delaun = new Delaunay(50);
+            let delaun = new Delaunay(20);
             //delaun.delaunization(0,50);
             //delaunayAnimation(delaun);
             window.requestAnimationFrame(function(){delaunayAnimation(delaun)});
@@ -25,5 +27,14 @@ function fetchMatchingScript(){
         default:
             ctx.strokeText("Select a mode",canvas.width/2-50,canvas.height/2-50);
             break;
+    }
+}
+
+function updateBtn(){
+    if (btn.value == "Start"){
+        btn.value = "Stop";
+        fetchMatchingScript();
+    }else{
+        btn.value = "Start";
     }
 }
