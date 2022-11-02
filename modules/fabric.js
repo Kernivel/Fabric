@@ -18,7 +18,7 @@ function animate(){
         
     }*/
     //ctx.clearRect(0,0,canvas.width,canvas.height);
-    movePoints();
+    //movePointsThrustBounce();
     connectCloseDots(200);
     if(scriptName == "fabric"){
         window.requestAnimationFrame(animate);

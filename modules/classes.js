@@ -2,10 +2,19 @@ class Point{
     cwnext = null;
     ccwnext = null;
     index = null;
-    
+    thrustX = 0;
+    thrustY = 0;
+
     constructor(x,y){
         this.x = x;
         this.y = y;
+    }
+
+    updateThrustPoint(){
+        let newThrustX = clampValue((this.thrustX+Math.random()-0.5),-5,5);
+        let newThrustY = clampValue((this.thrustY+Math.random()-0.5),-5,5);
+        this.thrustX = newThrustX;
+        this.thrustY = newThrustY;
     }
 
     substract(p){

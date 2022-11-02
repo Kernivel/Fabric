@@ -68,13 +68,13 @@ function drawAdjency(delaunObj){
     ctx.lineWidth = 1;    
     let adjencyList = delaunObj.adjencyList;
     let pts = delaunObj.pts;
-    console.log("In draw",adjencyList);
+    //console.log("In draw",adjencyList);
     for(let el in adjencyList){
         for(let line of adjencyList[el].values()){
             
             ctx.beginPath();
-            console.log("Start",pts[el].index);
-            console.log("End",pts[line].index);
+            //console.log("Start",pts[el].index);
+            //console.log("End",pts[line].index);
             ctx.moveTo(pts[el].x,pts[el].y);
             ctx.lineTo(pts[line].x,pts[line].y);
             //ctx.lineTo(pts[el].x,pts[el].y);
@@ -88,6 +88,12 @@ function delaunayAnimation(delaunObj){
     ctx.save();
     delaunObj.delaunization(0,delaunObj.pts.length);
     drawAdjency(delaunObj);
-    delaunObj.movePoints();
+    delaunObj.updateThrustPts();
+    delaunObj.movePointsThrustBounce();
     window.requestAnimationFrame(function(){delaunayAnimation(delaunObj)});
+}
+
+function clampValue(val,min,max){
+    val = Math.min(Math.max(min,val),max);
+    return val;
 }

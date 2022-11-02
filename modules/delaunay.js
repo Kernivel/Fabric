@@ -8,10 +8,10 @@ class Delaunay{
 
     
 
-    movePoints(){
+    movePointsRandom(){
         for(let i = 0;i<this.pts.length;i++){
-            let newX = (Math.random()-0.5)+this.pts[i].x;
-            let newY = (Math.random()-0.5)+this.pts[i].y;
+            let newX = (Math.random()-0.5)*2+this.pts[i].x;
+            let newY = (Math.random()-0.5)*2+this.pts[i].y;
             this.pts[i].x= newX;
             this.pts[i].y = newY;
         }
@@ -20,6 +20,53 @@ class Delaunay{
             return a.x-b.x});
         for(let i = 0;i<this.pts.length;i++){
             this.pts[i].index = i;
+        }
+    }
+
+    updateThrustPts(){
+        for(let i = 0;i<this.pts.length;i++){
+            this.pts[i].updateThrustPoint();
+        }
+    }
+    movePointsThrust(){
+        for(let i = 0;i<this.pts.length;i++){
+            this.pts[i].x += this.pts[i].thrustX;
+            this.pts[i].x = clampValue(this.pts[i].x,0,canvas.width);
+            
+            this.pts[i].y += this.pts[i].thrustY;
+            this.pts[i].y = clampValue(this.pts[i].y,0,canvas.height);  
+        }
+        //console.log(this.pts);
+        this.pts.sort(function(a,b){if(a.x === b.x)return a.y-b.y;
+            return a.x-b.x});
+        for(let i = 0;i<this.pts.length;i++){
+            this.pts[i].index = i;
+            ctx.strokeText(i,this.pts[i].x,this.pts[i].y);
+        }
+    }
+
+    movePointsThrustBounce(){
+        for(let i = 0;i<this.pts.length;i++){
+            if(this.pts[i].x<0){
+                this.pts[i].thrustX = 2;
+            }else if(this.pts[i].x>canvas.width){
+                this.pts[i].thrustX = -2;
+            }
+            if(this.pts[i].y<0){
+                this.pts[i].thrustY = 2;
+            }else if(this.pts[i].y>canvas.height){
+                this.pts[i].thrustY = -2;
+            }
+            this.pts[i].x += this.pts[i].thrustX;
+            
+            this.pts[i].y += this.pts[i].thrustY;
+        }
+        //console.log(this.pts);
+        this.pts.sort(function(a,b){if(a.x === b.x)return a.y-b.y;
+            return a.x-b.x});
+        for(let i = 0;i<this.pts.length;i++){
+            this.pts[i].index = i;
+            ctx.strokeText(i,this.pts[i].x,this.pts[i].y);
         }
     }
 
@@ -55,7 +102,7 @@ class Delaunay{
 
 
     mergeHulls(leftHull,rightHull){
-        console.log(rightHull);
+        console.log("starting hull",rightHull);
         let q = this.pts[Math.min.apply(null,rightHull)];
         let p = this.pts[Math.max.apply(null,leftHull)];
         let cpP = p;
@@ -79,6 +126,8 @@ class Delaunay{
                 break;
             }
         }
+        console.log(p);
+        console.log(q);
     
         //up the bridge cpP cpQ 
         while (true){
@@ -100,6 +149,8 @@ class Delaunay{
         q.cwnext = p.index;
         cpP.cwnext = cpQ.index;
         cpQ.ccwnext = cpP.index;
+        //console.log(cpQ);
+        //console.log(cpP);
         this.adjencyList[p.index].add(q.index);
         this.adjencyList[q.index].add(p.index);
         //this.adjencyList[cpP.index].add(cpQ.index);
@@ -152,17 +203,24 @@ class Delaunay{
                 }
         
         }while((leftCandidate != null || rightCandidate != null));
-
+        console.log("Out of candidte");
 
         
         
         let start = p;
+        let seen = new Set();
         let hull = [];
         do{
+            console.log("Start is ",start.index);
+            console.log("At :",p.index);
             hull.push(p.index);
+            if(seen.has(p.index)){
+                break;
+            }
+            seen.add(p.index);
             p = this.pts[p.cwnext];
         }while(p != start);
-    
+        console.log("New hull",hull);
         return hull;
     }
 
