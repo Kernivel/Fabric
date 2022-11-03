@@ -133,7 +133,8 @@ class Delaunay{
 
 
     mergeHulls(leftHull,rightHull){
-        console.log("starting hull",rightHull);
+        console.log("merging hull ",JSON.stringify(leftHull)," and ",JSON.stringify(rightHull));
+        //console.log("starting hull",rightHull);
         let q = this.pts[Math.min.apply(null,rightHull)];
         let p = this.pts[Math.max.apply(null,leftHull)];
         let cpP = p;
@@ -157,8 +158,8 @@ class Delaunay{
                 break;
             }
         }
-        console.log(p);
-        console.log(q);
+
+        
     
         //up the bridge cpP cpQ 
         while (true){
@@ -176,15 +177,32 @@ class Delaunay{
             }
         }
     
-        p.ccwnext = q.index;
-        q.cwnext = p.index;
-        cpP.cwnext = cpQ.index;
-        cpQ.ccwnext = cpP.index;
-        /*
-        if(cpP != p || cpQ != q){
+        console.log("P is ",p.index);
+        console.log("Q is",q.index);
+        console.log("cpP is ",cpP.index);
+        console.log("cpQ is",cpQ.index);
+        
+        //cpP.cwnext = cpQ.index;
+        //cpQ.ccwnext = cpP.index;
+        
+
+        
+        if(cpP == p || cpQ == q){
+            let start = this.pts[Math.min.apply(null,leftHull)];
+            let end = this.pts[Math.max.apply(null,rightHull)];
+            //colinear points
+            p.cwnext = q.index;
+            q.ccwnext = p.index;
+            start.ccwnext = end.index;
+            end.cwnext = start.index;
+            //q.cwnext = p.index;
+        }else{
+            p.ccwnext = q.index;
+            q.cwnext = p.index;
             cpP.cwnext = cpQ.index;
             cpQ.ccwnext = cpP.index;
-        }*/
+        }
+
         //console.log(cpQ);
         //console.log(cpP);
         this.adjencyList[p.index].add(q.index);
@@ -201,10 +219,10 @@ class Delaunay{
             //console.log(JSON.stringify(this.adjencyList));
             if(leftCandidate != null && rightCandidate != null){
                 
-                //console.log("Left cand",JSON.stringify(leftCandidate.index));
+                console.log("Left cand",JSON.stringify(leftCandidate.index));
                 //console.log("Left adj",JSON.stringify(this.adjencyList[leftCandidate.index]));
                 //console.log("Right cand",JSON.stringify(rightCandidate.index));
-                //console.log("Right adj",JSON.stringify(this.adjencyList[rightCandidate.index]));
+                console.log("Right adj",JSON.stringify(this.adjencyList[rightCandidate.index]));
                 if(!leftCandidate.inCircle(p,rightCandidate,q)){
                     //console.log("Left candidate : ",leftCandidate.index," isn't in circumcircle :",p.index,rightCandidate.index,q.index);
                     this.adjencyList[rightCandidate.index].add(p.index);
@@ -243,22 +261,22 @@ class Delaunay{
 
         
         
-        //let start = p;
-        let start = this.pts[Math.min.apply(null,leftHull)];
+        let start = p;
+        //let start = this.pts[Math.min.apply(null,leftHull)];
         let runner = start;
         let seen = new Set();
         let hull = [];
         do{
             //console.log("Start is ",start.index);
             //console.log("At :",p.index);
-            hull.push(runner.index);
-            /*if(seen.has(runner.index)){
+            if(seen.has(runner.index)){
                 break;
-            }*/
+            }
+            hull.push(runner.index);
             seen.add(runner.index);
             runner = this.pts[runner.cwnext];
         }while(runner != start);
-        //console.log("New hull",hull);
+        console.log("Resulting hull",hull);
         return hull;
     }
 
@@ -301,7 +319,7 @@ class Delaunay{
             //drawLine2Points(this.pts[start],this.pts[start+1]);
         }else if(dist  == 3){
     
-            if (this.direction(this.pts[start],this.pts[start+1],this.pts[start+2])<0){
+            if (this.direction(this.pts[start],this.pts[start+1],this.pts[start+2])<=0){
                 this.pts[start].cwnext = start+1;
                 this.pts[start].ccwnext = start+2;
                 this.pts[start+1].cwnext = start+2;
