@@ -41,7 +41,7 @@ class Delaunay{
             return a.x-b.x});
         for(let i = 0;i<this.pts.length;i++){
             this.pts[i].index = i;
-            ctx.strokeText(i,this.pts[i].x,this.pts[i].y);
+            //ctx.strokeText(i,this.pts[i].x,this.pts[i].y);
         }
     }
 
@@ -66,7 +66,7 @@ class Delaunay{
             return a.x-b.x});
         for(let i = 0;i<this.pts.length;i++){
             this.pts[i].index = i;
-            ctx.strokeText(i,this.pts[i].x,this.pts[i].y);
+            //ctx.strokeText(i,this.pts[i].x,this.pts[i].y);
         }
     }
 
@@ -180,6 +180,11 @@ class Delaunay{
         q.cwnext = p.index;
         cpP.cwnext = cpQ.index;
         cpQ.ccwnext = cpP.index;
+        /*
+        if(cpP != p || cpQ != q){
+            cpP.cwnext = cpQ.index;
+            cpQ.ccwnext = cpP.index;
+        }*/
         //console.log(cpQ);
         //console.log(cpP);
         this.adjencyList[p.index].add(q.index);
@@ -238,19 +243,21 @@ class Delaunay{
 
         
         
-        let start = p;
+        //let start = p;
+        let start = this.pts[Math.min.apply(null,leftHull)];
+        let runner = start;
         let seen = new Set();
         let hull = [];
         do{
             //console.log("Start is ",start.index);
             //console.log("At :",p.index);
-            hull.push(p.index);
-            if(seen.has(p.index)){
+            hull.push(runner.index);
+            /*if(seen.has(runner.index)){
                 break;
-            }
-            seen.add(p.index);
-            p = this.pts[p.cwnext];
-        }while(p != start);
+            }*/
+            seen.add(runner.index);
+            runner = this.pts[runner.cwnext];
+        }while(runner != start);
         //console.log("New hull",hull);
         return hull;
     }

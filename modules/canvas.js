@@ -33,6 +33,7 @@ function createPoints(nbPoints){
                             return a.x-b.x});
     for(let i = 0;i<pts.length;i++){
         pts[i].index = i;
+        ctx.strokeText(i,pts[i].x,pts[i].y);
     }
     return pts;
 };
@@ -43,6 +44,12 @@ function createPointsWithBorder(nbPoints){
     pts.push(new Point(0,canvas.height));
     pts.push(new Point(canvas.width,0));
     pts.push(new Point(canvas.width,canvas.height));
+
+    //Testing for delaunay errors :
+    pts.push(new Point(0,canvas.height/5));
+    pts.push(new Point(0,canvas.height/4));
+    pts.push(new Point(0,canvas.height/3));
+
 
     pts.push(new Point(0,canvas.height/2));
     pts.push(new Point(canvas.width/2,0));
@@ -59,6 +66,7 @@ function createPointsWithBorder(nbPoints){
                             return a.x-b.x});
     for(let i = 0;i<pts.length;i++){
         pts[i].index = i;
+        ctx.strokeText(i,pts[i].x,pts[i].y);
     }
     return pts;
 };
@@ -115,9 +123,10 @@ function drawAdjency(delaunObj){
 }
 
 function delaunayAnimation(delaunObj){
-    ctx.clearRect(0,0,canvas.width,canvas.height); // clear canvas
-    ctx.save();
+    
+    //ctx.save();
     delaunObj.delaunization(0,delaunObj.pts.length);
+    ctx.clearRect(0,0,canvas.width,canvas.height); // clear canvas
     drawAdjency(delaunObj);
     delaunObj.updateThrustPts();
     delaunObj.movePointsThrustOffset();

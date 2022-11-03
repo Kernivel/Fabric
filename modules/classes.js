@@ -1,7 +1,8 @@
 class Point{
+
+    index = null;
     cwnext = null;
     ccwnext = null;
-    index = null;
     thrustX = 0;
     thrustY = 0;
 
