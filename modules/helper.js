@@ -1,6 +1,11 @@
 var elt = document.querySelector('select');
 var scriptName = "";
 var btn = document.querySelector('input');
+var speedSlider = document.getElementById('topSpeed');
+var accSlider = document.getElementById('acceleration');
+
+var maxSpeed = 2;
+var acceleration = 0.5;
 let delaun = null;
 btn.addEventListener('click',updateBtn);
 elt.addEventListener('change',function(){scriptName = elt.value;fetchMatchingScript()});
@@ -43,4 +48,14 @@ function updateBtn(){
     }else{
         btn.value = "Start";
     }
+}
+
+function updateMaxSpeed(){
+    maxSpeed = speedSlider.value/10;
+    document.getElementById('outputSpeed').innerHTML ="speed " + maxSpeed; 
+}
+
+function updateMaxAccel() {
+    acceleration = accSlider.value/10;
+    document.getElementById('outputAccel').innerHTML ="accel " + acceleration; 
 }

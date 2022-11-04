@@ -48,14 +48,14 @@ class Delaunay{
     movePointsThrustBounce(){
         for(let i = 0;i<this.pts.length;i++){
             if(this.pts[i].x<0){
-                this.pts[i].thrustX = 2;
+                this.pts[i].thrustX = maxSpeed;
             }else if(this.pts[i].x>canvas.width){
-                this.pts[i].thrustX = -2;
+                this.pts[i].thrustX = -maxSpeed;
             }
             if(this.pts[i].y<0){
-                this.pts[i].thrustY = 2;
+                this.pts[i].thrustY = maxSpeed;
             }else if(this.pts[i].y>canvas.height){
-                this.pts[i].thrustY = -2;
+                this.pts[i].thrustY = -maxSpeed;
             }
             this.pts[i].x += this.pts[i].thrustX;
             
@@ -73,14 +73,14 @@ class Delaunay{
     movePointsThrustOffset(){
         for(let i = 0;i<this.pts.length;i++){
             if(this.pts[i].x<4){
-                this.pts[i].thrustX = 2;
+                this.pts[i].thrustX = maxSpeed;
             }else if(this.pts[i].x>canvas.width-4){
-                this.pts[i].thrustX = -2;
+                this.pts[i].thrustX = -maxSpeed;
             }
             if(this.pts[i].y<4){
-                this.pts[i].thrustY = 2;
+                this.pts[i].thrustY = maxSpeed;
             }else if(this.pts[i].y>canvas.height-4){
-                this.pts[i].thrustY = -2;
+                this.pts[i].thrustY = -maxSpeed;
             }
 
             if(this.pts[i].x == 0 || this.pts[i].x == canvas.width || this.pts[i].y == 0 || this.pts[i].y == canvas.height){
@@ -135,8 +135,12 @@ class Delaunay{
     mergeHulls(leftHull,rightHull){
         console.log("merging hull ",JSON.stringify(leftHull)," and ",JSON.stringify(rightHull));
         //console.log("starting hull",rightHull);
+        
         let q = this.pts[Math.min.apply(null,rightHull)];
         let p = this.pts[Math.max.apply(null,leftHull)];
+
+        console.log("Og p is",p.index);
+        console.log("Og q is",q.index);
         let cpP = p;
         let cpQ = q;
     
@@ -177,8 +181,8 @@ class Delaunay{
             }
         }
     
-        console.log("P is ",p.index);
-        console.log("Q is",q.index);
+        console.log("P is now ",p.index);
+        console.log("Q is now",q.index);
         console.log("cpP is ",cpP.index);
         console.log("cpQ is",cpQ.index);
         
@@ -221,8 +225,8 @@ class Delaunay{
                 
                 console.log("Left cand",JSON.stringify(leftCandidate.index));
                 //console.log("Left adj",JSON.stringify(this.adjencyList[leftCandidate.index]));
-                //console.log("Right cand",JSON.stringify(rightCandidate.index));
-                console.log("Right adj",JSON.stringify(this.adjencyList[rightCandidate.index]));
+                console.log("Right cand",JSON.stringify(rightCandidate.index));
+                //console.log("Right adj",JSON.stringify(this.adjencyList[rightCandidate.index]));
                 if(!leftCandidate.inCircle(p,rightCandidate,q)){
                     //console.log("Left candidate : ",leftCandidate.index," isn't in circumcircle :",p.index,rightCandidate.index,q.index);
                     this.adjencyList[rightCandidate.index].add(p.index);
@@ -277,6 +281,7 @@ class Delaunay{
             runner = this.pts[runner.cwnext];
         }while(runner != start);
         console.log("Resulting hull",hull);
+        drawHull(this,hull);
         return hull;
     }
 

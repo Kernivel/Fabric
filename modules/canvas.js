@@ -49,7 +49,9 @@ function createPointsWithBorder(nbPoints){
     pts.push(new Point(0,canvas.height/5));
     pts.push(new Point(0,canvas.height/4));
     pts.push(new Point(0,canvas.height/3));
-
+    pts.push(new Point(canvas.width,canvas.height/5));
+    pts.push(new Point(canvas.width,canvas.height/4));
+    pts.push(new Point(canvas.width,canvas.height/3));
 
     pts.push(new Point(0,canvas.height/2));
     pts.push(new Point(canvas.width/2,0));
@@ -120,6 +122,24 @@ function drawAdjency(delaunObj){
             ctx.stroke();
         }
     }
+}
+
+function drawHull(delaun,hull){
+    ctx.beginPath();
+    ctx.strokeStyle = "blue";
+    ctx.lineWidth = 3;
+    let x = delaun.pts[hull[0]].x;
+    let y = delaun.pts[hull[0]].y;
+    ctx.moveTo(x,y);
+    for(let i = 0;i<hull.length;i++){
+        x = delaun.pts[hull[i]].x;
+        y = delaun.pts[hull[i]].y;
+        ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 1;
+    
 }
 
 function delaunayAnimation(delaunObj){
