@@ -5,6 +5,12 @@
     border-color: black;
 }
 
+span{
+    display: inline-block;
+    
+    align-content: center;
+    text-align: center;
+}
 
 div {
     /* I added this just for fun */

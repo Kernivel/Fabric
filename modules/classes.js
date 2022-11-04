@@ -12,8 +12,8 @@ class Point{
     }
 
     updateThrustPoint(){
-        let newThrustX = clampValue((this.thrustX+Math.random()-0.5)*acceleration,-maxSpeed,maxSpeed);
-        let newThrustY = clampValue((this.thrustY+Math.random()-0.5)*acceleration,-maxSpeed,maxSpeed);
+        let newThrustX = clampValue(this.thrustX+(Math.random()-0.5)*acceleration,-maxSpeed,maxSpeed);
+        let newThrustY = clampValue(this.thrustY+(Math.random()-0.5)*acceleration,-maxSpeed,maxSpeed);
         this.thrustX = newThrustX;
         this.thrustY = newThrustY;
     }

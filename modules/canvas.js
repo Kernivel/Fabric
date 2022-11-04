@@ -46,12 +46,12 @@ function createPointsWithBorder(nbPoints){
     pts.push(new Point(canvas.width,canvas.height));
 
     //Testing for delaunay errors :
-    pts.push(new Point(0,canvas.height/5));
+    /*pts.push(new Point(0,canvas.height/5));
     pts.push(new Point(0,canvas.height/4));
     pts.push(new Point(0,canvas.height/3));
     pts.push(new Point(canvas.width,canvas.height/5));
     pts.push(new Point(canvas.width,canvas.height/4));
-    pts.push(new Point(canvas.width,canvas.height/3));
+    pts.push(new Point(canvas.width,canvas.height/3));*/
 
     pts.push(new Point(0,canvas.height/2));
     pts.push(new Point(canvas.width/2,0));
