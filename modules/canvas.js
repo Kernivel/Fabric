@@ -86,6 +86,23 @@ function drawTriangle(a,b,c){
     ctx.strokeStyle = "black";
 }
 
+function fillTrianglePos(a,b,c,pos){
+    //console.log("filling tri");
+    let posX = (pos[0]*255)/canvas.width;
+    let posY = (pos[1]*255)/canvas.height;
+    let color = rgb(posX,posY,126)
+    ctx.fillStyle = color;
+    //ctx.fillStyle = random_rgba();
+    //ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(a.x,a.y);
+    ctx.lineTo(b.x,b.y);
+    ctx.lineTo(c.x,c.y);
+    ctx.lineTo(a.x,a.y);
+    ctx.fill();
+    //ctx.strokeStyle = "black";
+}
+
 function drawLine2Points(a,b){
     ctx.strokeStyle = "blue";
     ctx.beginPath();
@@ -124,6 +141,28 @@ function drawAdjency(delaunObj){
     }
 }
 
+function findTriangles(delaunObj){
+    let triangleMap = {};
+    //Triangle is defined by its center point and idx of its 3 corners : [[c.x,c.y],idx1,idx2,idx3]
+    for(let i = 0;i<Object.keys(delaunObj.adjencyList).length;i++){
+        
+        for(const b of delaunObj.adjencyList[i]){
+            //let b = delaunObj.adjencyList[i][j];
+            for(const c of delaunObj.adjencyList[i]){
+                if(b==c){continue;}
+                //let c = delaunObj.adjencyList[i][k];
+                if(delaunObj.adjencyList[b].has(c) && delaunObj.adjencyList[i].has(c)){
+                    let centroid;
+                    let x = (delaunObj.pts[i].x+delaunObj.pts[b].x+delaunObj.pts[c].x)/3;  
+                    let y = (delaunObj.pts[i].y+delaunObj.pts[b].y+delaunObj.pts[c].y)/3;
+                    triangleMap[[x,y]] = [i,b,c];
+                }
+            }
+        }
+    }
+    return triangleMap;
+}
+
 function drawHull(delaun,hull){
     ctx.beginPath();
     ctx.strokeStyle = "blue";
@@ -148,6 +187,14 @@ function delaunayAnimation(delaunObj){
     delaunObj.delaunization(0,delaunObj.pts.length);
     ctx.clearRect(0,0,canvas.width,canvas.height); // clear canvas
     drawAdjency(delaunObj);
+    let triangles = findTriangles(delaunObj);
+    for(const [key,value] of Object.entries(triangles))
+    {
+        let a = value[0];
+        let b = value[1];
+        let c = value[2];
+        fillTrianglePos(delaunObj.pts[a],delaunObj.pts[b],delaunObj.pts[c],key);
+    }
     delaunObj.updateThrustPts();
     delaunObj.movePointsThrustOffset();
     if(btn.value == "Stop"){
@@ -159,3 +206,12 @@ function clampValue(val,min,max){
     val = Math.min(Math.max(min,val),max);
     return val;
 }
+
+function random_rgba() {
+    var o = Math.round, r = Math.random, s = 255;
+    return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + r().toFixed(1) + ')';
+}
+
+function rgb(r, g, b){
+    return "rgb("+r+","+g+","+b+")";
+  }
