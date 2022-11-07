@@ -97,7 +97,7 @@ class Delaunay{
             return a.x-b.x});
         for(let i = 0;i<this.pts.length;i++){
             this.pts[i].index = i;
-            ctx.strokeText(i,this.pts[i].x,this.pts[i].y);
+            //ctx.strokeText(i,this.pts[i].x,this.pts[i].y);
         }
     }
 

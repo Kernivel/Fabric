@@ -40,24 +40,16 @@ function createPoints(nbPoints){
 
 function createPointsWithBorder(nbPoints){
     let pts = [];
-    pts.push(new Point(0,0));
+    /*pts.push(new Point(0,0));
     pts.push(new Point(0,canvas.height));
     pts.push(new Point(canvas.width,0));
     pts.push(new Point(canvas.width,canvas.height));
-
-    //Testing for delaunay errors :
-    /*pts.push(new Point(0,canvas.height/5));
-    pts.push(new Point(0,canvas.height/4));
-    pts.push(new Point(0,canvas.height/3));
-    pts.push(new Point(canvas.width,canvas.height/5));
-    pts.push(new Point(canvas.width,canvas.height/4));
-    pts.push(new Point(canvas.width,canvas.height/3));*/
 
     pts.push(new Point(0,canvas.height/2));
     pts.push(new Point(canvas.width/2,0));
     pts.push(new Point(canvas.width,canvas.height/2));
     pts.push(new Point(canvas.width/2,canvas.height));
-
+    */
     for (let i = 0;i<nbPoints-8;i++){
         
         let x = Math.random()*canvas.width;
@@ -88,6 +80,7 @@ function drawTriangle(a,b,c){
 
 function fillTrianglePos(a,b,c,pos){
     //console.log("filling tri");
+    pos = pos.split(",");
     let posX = (pos[0]*255)/canvas.width;
     let posY = (pos[1]*255)/canvas.height;
     let color = rgb(posX,posY,126)
@@ -186,7 +179,7 @@ function delaunayAnimation(delaunObj){
     //ctx.save();
     delaunObj.delaunization(0,delaunObj.pts.length);
     ctx.clearRect(0,0,canvas.width,canvas.height); // clear canvas
-    drawAdjency(delaunObj);
+    //drawAdjency(delaunObj);
     let triangles = findTriangles(delaunObj);
     for(const [key,value] of Object.entries(triangles))
     {
