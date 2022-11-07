@@ -22,7 +22,7 @@ function fetchMatchingScript(){
             //mainDebug(30);
             break;
         case 'delaunay':
-            delaun = new Delaunay(20);
+            delaun = new Delaunay(50);
             //delaun.delaunization(0,50);
             //delaunayAnimation(delaun);
             window.requestAnimationFrame(function(){delaunayAnimation(delaun)});
