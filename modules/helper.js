@@ -21,12 +21,11 @@ function fetchMatchingScript(){
     console.log("script is : " + scriptName);
     let canvas = document.getElementById("myCanvas");
     switch(scriptName){
-        case 'fabric':
-            break;
         case 'delaunay':
-            delaun = new Delaunay(20);
-            window.requestAnimationFrame(function(){delaunayAnimation(delaun)});
-            drawAdjency(delaun);
+            let pts = createPoints(20);
+            delaun = new Delaunay(pts);
+            //window.requestAnimationFrame(function(){delaunayAnimation(delaun)});
+            //drawAdjency(delaun);
             break;
         default:
             ctx.fillText("Select a mode",canvas.width/2-canvas.width/15,canvas.height/2-canvas.height/15);

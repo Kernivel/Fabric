@@ -40,18 +40,7 @@ function createPoints(nbPoints){
 
 function createPointsWithBorder(nbPoints){
     let pts = [];
-    /*pts.push(new Point(0,0));
-    pts.push(new Point(0,canvas.height));
-    pts.push(new Point(canvas.width,0));
-    pts.push(new Point(canvas.width,canvas.height));
-
-    pts.push(new Point(0,canvas.height/2));
-    pts.push(new Point(canvas.width/2,0));
-    pts.push(new Point(canvas.width,canvas.height/2));
-    pts.push(new Point(canvas.width/2,canvas.height));
-    */
-    for (let i = 0;i<nbPoints-8;i++){
-        
+    for (let i = 0;i<nbPoints;i++){
         let x = Math.random()*canvas.width;
         let y = Math.random()*canvas.height;
         pts.push(new Point(x,y));
@@ -79,21 +68,17 @@ function drawTriangle(a,b,c){
 }
 
 function fillTrianglePos(a,b,c,pos){
-    //console.log("filling tri");
     pos = pos.split(",");
     let posX = (pos[0]*255)/canvas.width;
     let posY = (pos[1]*255)/canvas.height;
     let color = rgb(posX,posY,126)
     ctx.fillStyle = color;
-    //ctx.fillStyle = random_rgba();
-    //ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.moveTo(a.x,a.y);
     ctx.lineTo(b.x,b.y);
     ctx.lineTo(c.x,c.y);
     ctx.lineTo(a.x,a.y);
     ctx.fill();
-    //ctx.strokeStyle = "black";
 }
 
 function drawLine2Points(a,b){

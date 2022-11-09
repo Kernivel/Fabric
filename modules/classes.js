@@ -1,21 +1,19 @@
 class Point{
 
     index = null;
-    cwnext = null;
-    ccwnext = null;
-    thrustX = 0;
-    thrustY = 0;
+    speedX = 0;
+    speedY = 0;
 
-    constructor(x,y){
+    constructor(x,y,pts){
         this.x = x;
         this.y = y;
     }
 
     updateThrustPoint(){
-        let newThrustX = clampValue(this.thrustX+(Math.random()-0.5)*acceleration,-maxSpeed,maxSpeed);
-        let newThrustY = clampValue(this.thrustY+(Math.random()-0.5)*acceleration,-maxSpeed,maxSpeed);
-        this.thrustX = newThrustX;
-        this.thrustY = newThrustY;
+        let newSpeedX = clampValue(this.speedX+(Math.random()-0.5)*acceleration,-maxSpeed,maxSpeed);
+        let newSpeedY = clampValue(this.speedY+(Math.random()-0.5)*acceleration,-maxSpeed,maxSpeed);
+        this.speedX = newSpeedX;
+        this.speedY = newSpeedY;
     }
 
     substract(p){
@@ -38,45 +36,5 @@ class Point{
             (bx_*bx_ + by_*by_) * (ax_*cy_-cx_*ay_) +
             (cx_*cx_ + cy_*cy_) * (ax_*by_-bx_*ay_)
         ) > 0;
-    }
-};
-
-class DoubleCyclingLinkedList{
-    constructor(){
-        this.head = null;
-        this.tail = null;
-        this.length = 0;
-        this.left = null;
-        this.right = null;
-    }
-    insert(value){
-        let newNode = new Node(value);
-        this.length += 1;
-        if(this.tail){
-            newNode.prev = this.tail;
-            newNode.next = this.head;
-            this.tail.next = newNode;
-            this.tail = this.tail.next;
-            if(pts[value].x>pts[this.right].x){
-                this.right = newNode;
-            }else if(pts[value].x<val[this.left].x){
-                this.left = newNode;
-            }
-            return newNode;
-        }
-        this.head = this.tail = newNode;
-        this.left = newNode;
-        this.right = newNode;
-        newNode.next = this.head;
-        newNode.prev = this.head;
-        return newNode;
-    }
-}
-
-class Node{
-    constructor(value){
-        this.val = value;
-        this.next = null;
-        this.prev = null;
     }
 };
