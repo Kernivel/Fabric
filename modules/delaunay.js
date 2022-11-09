@@ -8,42 +8,12 @@ class Delaunay{
 
     
 
-    movePointsRandom(){
-        for(let i = 0;i<this.pts.length;i++){
-            let newX = (Math.random()-0.5)*2+this.pts[i].x;
-            let newY = (Math.random()-0.5)*2+this.pts[i].y;
-            this.pts[i].x= newX;
-            this.pts[i].y = newY;
-        }
-        console.log(this.pts);
-        this.pts.sort(function(a,b){if(a.x === b.x)return a.y-b.y;
-            return a.x-b.x});
-        for(let i = 0;i<this.pts.length;i++){
-            this.pts[i].index = i;
-        }
-    }
-
     updateThrustPts(){
         for(let i = 0;i<this.pts.length;i++){
             this.pts[i].updateThrustPoint();
         }
     }
-    movePointsThrust(){
-        for(let i = 0;i<this.pts.length;i++){
-            this.pts[i].x += this.pts[i].thrustX;
-            this.pts[i].x = clampValue(this.pts[i].x,0,canvas.width);
-            
-            this.pts[i].y += this.pts[i].thrustY;
-            this.pts[i].y = clampValue(this.pts[i].y,0,canvas.height);  
-        }
-        //console.log(this.pts);
-        this.pts.sort(function(a,b){if(a.x === b.x)return a.y-b.y;
-            return a.x-b.x});
-        for(let i = 0;i<this.pts.length;i++){
-            this.pts[i].index = i;
-            //ctx.strokeText(i,this.pts[i].x,this.pts[i].y);
-        }
-    }
+
 
     movePointsThrustBounce(){
         for(let i = 0;i<this.pts.length;i++){
@@ -62,28 +32,28 @@ class Delaunay{
             this.pts[i].y += this.pts[i].thrustY;
         }
         //console.log(this.pts);
-        this.pts.sort(function(a,b){if(a.x === b.x)return a.y-b.y;
+        this.pts.sort(function(a,b){if(a.x === b.x)return b.y-a.y;
             return a.x-b.x});
         for(let i = 0;i<this.pts.length;i++){
             this.pts[i].index = i;
-            //ctx.strokeText(i,this.pts[i].x,this.pts[i].y);
+            ctx.fillText(i,this.pts[i].x,this.pts[i].y);
         }
     }
 
     movePointsThrustOffset(){
         for(let i = 0;i<this.pts.length;i++){
-            if(this.pts[i].x<4){
+            if(this.pts[i].x<10){
                 this.pts[i].thrustX = maxSpeed;
-            }else if(this.pts[i].x>canvas.width-4){
+            }else if(this.pts[i].x>canvas.width-10){
                 this.pts[i].thrustX = -maxSpeed;
             }
-            if(this.pts[i].y<4){
+            if(this.pts[i].y<10){
                 this.pts[i].thrustY = maxSpeed;
-            }else if(this.pts[i].y>canvas.height-4){
+            }else if(this.pts[i].y>canvas.height-10){
                 this.pts[i].thrustY = -maxSpeed;
             }
 
-            if(this.pts[i].x == 0 || this.pts[i].x == canvas.width || this.pts[i].y == 0 || this.pts[i].y == canvas.height){
+            if(this.pts[i].x <= 0 || this.pts[i].x >= canvas.width || this.pts[i].y <= 0 || this.pts[i].y >= canvas.height){
                 this.pts[i].thrustX = 0;
                 this.pts[i].thrustY = 0;
             }
@@ -92,18 +62,16 @@ class Delaunay{
             
             this.pts[i].y += this.pts[i].thrustY;
         }
-        //console.log(this.pts);
         this.pts.sort(function(a,b){if(a.x === b.x)return a.y-b.y;
             return a.x-b.x});
         for(let i = 0;i<this.pts.length;i++){
             this.pts[i].index = i;
-            //ctx.strokeText(i,this.pts[i].x,this.pts[i].y);
+            ctx.fillText(i,this.pts[i].x,this.pts[i].y);
         }
     }
 
     delaunization(start,end){
         if(this.pts == null){
-            //console.log("No points have been created before, use this.createPoints(nbPoints), before calling this function");
             return null;
         }
         let hullLeft = null;
@@ -116,14 +84,14 @@ class Delaunay{
             hull = this.initHull(start,end);
             return hull;
         }else if(dist == 3){
-            //drawTriangle(this.pts[start],this.pts[start+1],this.pts[start+2]);
+            drawTriangle(this.pts[start],this.pts[start+1],this.pts[start+2]);
             hull = this.initHull(start,end);
             return hull;
         }else{
             let mid = Math.ceil((start+end)/2);
             hullLeft = this.delaunization(start,mid);
             hullRight = this.delaunization(mid,end);
-            
+            drawLine2Points(this.pts[start],this.pts[start+1]);
             //console.log("Merging left,right",hullLeft,hullRight);
             hull = this.mergeHulls(hullLeft,hullRight);
             //console.log("New merged hull",hull);
@@ -181,16 +149,9 @@ class Delaunay{
             }
         }
     
-        console.log("P is now ",p.index);
-        console.log("Q is now",q.index);
-        console.log("cpP is ",cpP.index);
-        console.log("cpQ is",cpQ.index);
-        
-        //cpP.cwnext = cpQ.index;
-        //cpQ.ccwnext = cpP.index;
-        
+        console.log("Base LR edge (P to Q) is now : [",p.index," : ",q.index,"]");
+        console.log("Top LR edge (cpP to cpQ) is now : [",cpP.index," : ",cpQ.index,"]");
 
-        
         if(cpP == p || cpQ == q){
             let start = this.pts[Math.min.apply(null,leftHull)];
             let end = this.pts[Math.max.apply(null,rightHull)];
@@ -207,26 +168,19 @@ class Delaunay{
             cpQ.ccwnext = cpP.index;
         }
 
-        //console.log(cpQ);
-        //console.log(cpP);
+
         this.adjencyList[p.index].add(q.index);
         this.adjencyList[q.index].add(p.index);
-        //this.adjencyList[cpP.index].add(cpQ.index);
-        //this.adjencyList[cpQ.index].add(cpP.index);
+
         
         let leftCandidate = null;
         let rightCandidate = null;
         do{
-            //console.log("P : ",p.index,"Q : ",q.index);
             leftCandidate = this.findNextCandidate("left",p,q);
             rightCandidate = this.findNextCandidate("right",p,q);
-            //console.log(JSON.stringify(this.adjencyList));
             if(leftCandidate != null && rightCandidate != null){
-                
                 console.log("Left cand",JSON.stringify(leftCandidate.index));
-                //console.log("Left adj",JSON.stringify(this.adjencyList[leftCandidate.index]));
                 console.log("Right cand",JSON.stringify(rightCandidate.index));
-                //console.log("Right adj",JSON.stringify(this.adjencyList[rightCandidate.index]));
                 if(!leftCandidate.inCircle(p,rightCandidate,q)){
                     //console.log("Left candidate : ",leftCandidate.index," isn't in circumcircle :",p.index,rightCandidate.index,q.index);
                     this.adjencyList[rightCandidate.index].add(p.index);
@@ -240,25 +194,25 @@ class Delaunay{
                     //console.log("Moving p from:",p.index,"to :",leftCandidate.index);
                     p = leftCandidate;
                 }
-                }else if(leftCandidate != null){
-                    //.log("No right candidate");
-                    //console.log("Left cand",JSON.stringify(leftCandidate.index));
-                    //console.log("Left adj",JSON.stringify(this.adjencyList[leftCandidate.index]));
-                    this.adjencyList[leftCandidate.index].add(q.index);
-                    this.adjencyList[q.index].add(leftCandidate.index);
-                    //console.log("Moving p from:",p.index,"to :",leftCandidate.index);
-                    p = leftCandidate;
-                }else if(rightCandidate != null){
-                    //console.log("No left candidate");
-                    //console.log("Right cand",JSON.stringify(rightCandidate.index));
-                    //console.log("Right adj",JSON.stringify(this.adjencyList[rightCandidate.index]));
-                    this.adjencyList[rightCandidate.index].add(p.index);
-                    this.adjencyList[p.index].add(rightCandidate.index);
-                    //console.log("Moving q from:",q.index,"to :",rightCandidate.index);
-                    q = rightCandidate;
-                }else{
-                    //console.log("No choices made");
-                }
+            }else if(leftCandidate != null){
+                //.log("No right candidate");
+                //console.log("Left cand",JSON.stringify(leftCandidate.index));
+                //console.log("Left adj",JSON.stringify(this.adjencyList[leftCandidate.index]));
+                this.adjencyList[leftCandidate.index].add(q.index);
+                this.adjencyList[q.index].add(leftCandidate.index);
+                //console.log("Moving p from:",p.index,"to :",leftCandidate.index);
+                p = leftCandidate;
+            }else if(rightCandidate != null){
+                //console.log("No left candidate");
+                //console.log("Right cand",JSON.stringify(rightCandidate.index));
+                //console.log("Right adj",JSON.stringify(this.adjencyList[rightCandidate.index]));
+                this.adjencyList[rightCandidate.index].add(p.index);
+                this.adjencyList[p.index].add(rightCandidate.index);
+                //console.log("Moving q from:",q.index,"to :",rightCandidate.index);
+                q = rightCandidate;
+            }else{
+                //console.log("No choices made");
+            }
         
         }while((leftCandidate != null || rightCandidate != null));
         //console.log("Out of candidte");

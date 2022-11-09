@@ -13,12 +13,6 @@ function mainFabric(nbPoints){
 
 function animate(){
     let cnx = [];
-    /*for(let i = 0;i<pts.length;i++){
-        cnx[i] = find3Mins(i);
-        
-    }*/
-    //ctx.clearRect(0,0,canvas.width,canvas.height);
-    //movePointsThrustBounce();
     connectCloseDots(200);
     if(scriptName == "fabric"){
         window.requestAnimationFrame(animate);

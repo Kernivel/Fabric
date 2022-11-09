@@ -1,8 +1,8 @@
 #myCanvas {
-    border-width: 1px;
+    /*border-width: 1px;
     border-style: dashed;
     border-color: black;
-    border-color: black;
+    border-color: black;*/
 }
 
 span{
@@ -14,8 +14,8 @@ span{
 
 div {
     /* I added this just for fun */
-    background-color: rgb(139, 222, 250);
-    color: white;
+    
+    color: black;
     font-family: Century Gothic;
     padding: 5px;
     text-align: center;

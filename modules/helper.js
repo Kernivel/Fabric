@@ -5,7 +5,7 @@ var speedSlider = document.getElementById('topSpeed');
 var accSlider = document.getElementById('acceleration');
 
 var maxSpeed = 2;
-var acceleration = 0.5;
+var acceleration = 1;
 let delaun = null;
 btn.addEventListener('click',updateBtn);
 elt.addEventListener('change',function(){scriptName = elt.value;fetchMatchingScript()});
@@ -16,22 +16,14 @@ function fetchMatchingScript(){
     let canvas = document.getElementById("myCanvas");
     switch(scriptName){
         case 'fabric':
-            //mainFabric(100);
-            break;
-        case 'debug':
-            //mainDebug(30);
             break;
         case 'delaunay':
-            delaun = new Delaunay(50);
-            //delaun.delaunization(0,50);
-            //delaunayAnimation(delaun);
+            delaun = new Delaunay(25);
             window.requestAnimationFrame(function(){delaunayAnimation(delaun)});
-            //console.log("Done delaun");
-            //drawAdjency(delaun.adjencyList);
             drawAdjency(delaun);
             break;
         default:
-            ctx.strokeText("Select a mode",canvas.width/2-50,canvas.height/2-50);
+            ctx.fillText("Select a mode",canvas.width/2-canvas.width/15,canvas.height/2-canvas.height/15);
             break;
     }
 }
@@ -51,11 +43,11 @@ function updateBtn(){
 }
 
 function updateMaxSpeed(){
-    maxSpeed = speedSlider.value/10;
-    document.getElementById('outputSpeed').innerHTML ="speed " + maxSpeed; 
+    maxSpeed = parseInt(speedSlider.value);
+    document.getElementById('outputSpeed').innerHTML = "Speed : " + maxSpeed; 
 }
 
 function updateMaxAccel() {
-    acceleration = accSlider.value/10;
-    document.getElementById('outputAccel').innerHTML ="accel " + acceleration; 
+    acceleration = parseInt(accSlider.value);
+    document.getElementById('outputAccel').innerHTML = "Accel : " + acceleration; 
 }
