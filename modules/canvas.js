@@ -66,7 +66,6 @@ function createPointsWithBorder(nbPoints){
 };
 
 function drawTriangle(a,b,c){
-    console.log("Drawing tri");
     ctx.strokeStyle = "blue";
     ctx.lineWidth = 3;
     ctx.beginPath();
@@ -179,7 +178,7 @@ function drawHull(delaun,hull){
 
 function delaunayAnimation(delaunObj){
     
-    //ctx.save();
+    console.log("----NEW DELAUNAY TRIANGULATION ------");
     delaunObj.delaunization(0,delaunObj.pts.length);
     ctx.clearRect(0,0,canvas.width,canvas.height); // clear canvas
     //drawAdjency(delaunObj);

@@ -1,17 +1,23 @@
 var elt = document.querySelector('select');
 var scriptName = "";
+
 var btn = document.querySelector('input');
+var refreshBtn = document.getElementById('refresh');
+
 var speedSlider = document.getElementById('topSpeed');
 var accSlider = document.getElementById('acceleration');
 
 var maxSpeed = 2;
 var acceleration = 1;
 let delaun = null;
-btn.addEventListener('click',updateBtn);
 elt.addEventListener('change',function(){scriptName = elt.value;fetchMatchingScript()});
+btn.addEventListener('click',updateBtn);
+refreshBtn.addEventListener('click',fetchMatchingScript);
+
 
 
 function fetchMatchingScript(){
+    console.clear();
     console.log("script is : " + scriptName);
     let canvas = document.getElementById("myCanvas");
     switch(scriptName){
@@ -41,6 +47,21 @@ function updateBtn(){
         btn.value = "Start";
     }
 }
+
+function updateBtn(){
+    if (btn.value == "Start"){
+        btn.value = "Stop";
+        if(scriptName == "delaunay"){
+            window.requestAnimationFrame(function(){delaunayAnimation(delaun)});
+        }else{
+            fetchMatchingScript();
+        }
+        
+    }else{
+        btn.value = "Start";
+    }
+}
+
 
 function updateMaxSpeed(){
     maxSpeed = parseInt(speedSlider.value);
