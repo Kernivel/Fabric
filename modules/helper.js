@@ -24,7 +24,7 @@ function fetchMatchingScript(){
         case 'fabric':
             break;
         case 'delaunay':
-            delaun = new Delaunay(25);
+            delaun = new Delaunay(20);
             window.requestAnimationFrame(function(){delaunayAnimation(delaun)});
             drawAdjency(delaun);
             break;

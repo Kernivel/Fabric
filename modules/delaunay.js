@@ -114,15 +114,18 @@ class Delaunay{
     
         let prevP = null;
         let prevQ = null;
-    
+        console.log("---- Lowering bridge ----");
         //lower the bridge pq 
         while (true){
             prevP = p;
             prevQ = q;     
             while (this.direction(p, q, this.pts[q.ccwnext]) < 0){
+                console.log("Lowering ",q.index," to ",q.ccwnext);
                 q = this.pts[q.ccwnext];
             }
+            console.log("p is ",p.index,"cwnext is",p.cwnext,"dir is",this.direction(q, p, this.pts[p.cwnext]));
             while (this.direction(q, p, this.pts[p.cwnext]) > 0){
+                console.log("Lowering ",p.index," to ",p.cwnext);
                 p = this.pts[p.cwnext];
             }
     
@@ -132,16 +135,18 @@ class Delaunay{
         }
 
         
-    
+        console.log("---- Upping bridge ----");
         //up the bridge cpP cpQ 
         while (true){
             prevP = cpP;
             prevQ = cpQ;
     
             while (this.direction(cpP, cpQ, this.pts[cpQ.cwnext]) > 0){
+                console.log("Upping ",cpQ.index," to ",cpQ.cwnext);
                 cpQ = this.pts[cpQ.cwnext];
             }
             while (this.direction(cpQ, cpP, this.pts[cpP.ccwnext]) < 0){
+                console.log("Upping ",cpP.index," to ",cpP.ccwnext);
                 cpP = this.pts[cpP.ccwnext];
             }
             if (cpP == prevP && cpQ == prevQ){
@@ -178,6 +183,9 @@ class Delaunay{
         let rightCandidate = null;
         console.log("----- LOOKING FOR CANDIDATES ---------");
         do{
+            if(p == cpP && q == cpQ){
+                break;
+            }
             leftCandidate = this.findNextCandidate("left",p,q);
             rightCandidate = this.findNextCandidate("right",p,q);
             if(leftCandidate != null && rightCandidate != null){
@@ -188,6 +196,7 @@ class Delaunay{
                     //console.log("Left candidate : ",leftCandidate.index," isn't in circumcircle :",p.index,rightCandidate.index,q.index);
                     this.adjencyList[rightCandidate.index].add(p.index);
                     this.adjencyList[p.index].add(rightCandidate.index);
+
                     console.log("Moving q from : ",q.index," to : ",rightCandidate.index);
                     q = rightCandidate;
                 }else{
@@ -197,6 +206,7 @@ class Delaunay{
                     this.adjencyList[q.index].add(leftCandidate.index);
                     console.log("Moving p from : ",p.index," to : ",leftCandidate.index);
                     p = leftCandidate;
+
                 }
             }else if(leftCandidate != null){
                 console.log("Case : no right candidate");
@@ -222,7 +232,6 @@ class Delaunay{
         //console.log("Out of candidte");
 
         
-        
         let start = p;
         //let start = this.pts[Math.min.apply(null,leftHull)];
         let runner = start;
@@ -241,12 +250,10 @@ class Delaunay{
             seen.add(runner.index);
             runner = this.pts[runner.cwnext];
         }while(runner != start);
-
-        //Verif loop
-        this.pts[hull[hull.length-1]].cwnext = hull[0];
-        this.pts[hull[0]].ccwnext = hull[hull.length-1];
-
-        console.log("Resulting hull ",JSON.stringify(hull));
+        console.log("----- Resulting hull -----",JSON.stringify(hull));
+        for(let i = 0;i<hull.length;i++){
+            console.log(hull[i]," is connected to cw ",this.pts[hull[i]].cwnext," and ccw",this.pts[hull[i]].ccwnext);
+        }
         drawHull(this,hull);
         return hull;
     }
